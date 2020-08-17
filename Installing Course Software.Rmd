@@ -1,0 +1,25 @@
+---
+title: "Installing R / RStudio"
+author: "D. Howell"
+date: "8/17/2020"
+output: 
+  html_document:
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this class we will be using the R programming language via RStudio. R is just a high-level language that interprets your commands into operations that the computer knows how to perform. You can write R code directly into the command line, but usually you'll want to use an Integrated Development Environment (IDE), like RStudio. IDE's help developers (like yourself) organize their code into scripts (i.e. programs). When you're writing R code directly on the command line, it can be difficult to keep track of the code you've already run and it's even harder to figure out what is causing an error when one arises. 
+
+We'll get into the weeds of R and RStudio later in the course, but for now you just need to get it installed on your computer. NOTE: You should already have access to R/RStudio on the lab computers, if you prefer to go that route. 
+
+It's important to download and install the following software in the following order.
+
+1. You can download and install R [here](https://cloud.r-project.org/).
+2. And RStudio [here.](https://rstudio.com/products/rstudio/download/#download)
+
+Be sure to select the download specific to your operating system! 
+
+Once you've installed both tools, open RStudio to make sure you don't get any errors. Let me know if you're experiencing difficulty and we can set up a time to meet and get it figured out. 
