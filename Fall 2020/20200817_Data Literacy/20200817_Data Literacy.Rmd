@@ -1,0 +1,134 @@
+---
+title: "Data Literacy"
+author: "D. Howell"
+date: "8/17/2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Intro
+Data is fundamentally different from information, and information is fundamentally different from knowledge. However, they are related in the sense that knowledge is composed of collected information and information is composed of curated and analyzed data. Since data science is defined as the process of extracting value from data, and what's valuable is knowledge, we can look at data science as the process of turning data into accurate information, and then into knowledge/insight. Our first step into this valuable process begins with Data Literacy.
+
+Class Objective:
+
+  * To build a working knowledge about data as a concept, which will serve as the basis of the rest of the course. 
+  * To gain a comprehension of data in its different forms and contexts
+
+>"Data literacy includes the ability to read, work with, analyze and argue with data as part of a larger inquiry process. Reading data involves understanding what data is, and what aspects of the world it represents. Working with data involves  acquiring,  cleaning,  and managing  it. Analyzing  data  involves  filtering,  sorting,  aggregating,  comparing,  and performing  other  such  analytic  operations  on  it. Arguing  with  data  involves  using  data  to support  a  larger  narrative  intended  to  communicate  some  message  to  a  particular  audience. "
+[D’Ignazio, Bhargava](http://ci-journal.net/index.php/ciej/article/view/1294/1229)
+
+### What does data look like?
+Data comes different shapes, sizes, formats, and structures. The most defining feature of a data set is whether or not it is structured at all. The [majority of data that exists is unstructured](https://en.wikipedia.org/wiki/Unstructured_data#:~:text=In%201998%2C%20Merrill%20Lynch%20said,higher%20percentages%20of%20unstructured%20data.), but it requires time and skill to bring it into a format that is analyzable. In this course, we will focus our attention solely on structured data. 
+
+  * [Unstructured Data](https://treehousetechgroup.com/8-examples-of-unstructured-data/)
+    + Business documents
+    + Audio files
+    + Webpages
+    + Video files
+    + Open-ended survey responses
+    + Messaging apps
+    + Medical records
+  * Structured Data (i.e., the colloquial "spreadsheet")
+    + Structured data sets are tabular (think "like a [table](https://en.wikipedia.org/wiki/Table_(information))"). They're already organized into rows and columns. Below are some ubiquitous examples of structured data sets.
+
+***
+
+<center>
+![FigName](C:/Users/drew.howell/Desktop/School/20200817_Data Literacy/email.png)
+</center>
+<p style="text-align: center;"> My email inbox, which shows the sender, subject, beginning of the message content, and date/time of receipt. </p>
+
+***
+
+<center>
+![FigName](C:/Users/drew.howell/Desktop/School/20200817_Data Literacy/spotify.jpg)
+</center>
+<p style="text-align: center;"> Spotify, showing Track Title, Explicit Y/N, Artist(s), Album Title, when I saved the track, and the track length (M:SS) </p>
+
+***
+
+<center>
+![FigName](C:/Users/drew.howell/Desktop/School/20200817_Data Literacy/files.jpg)
+</center>
+<p style="text-align: center;"> A file explorer window, showing file name, data modified, file type, and size </p>
+
+***
+
+  * What do all these have in common? The characteristics of tabular data are:
+
+    + They consists of rows and columns. For instance, each song or email message or file is a row. Each of their characteristics—the song title, the message subject, the file name—is a column.
+    + Each row has the same columns as the other rows, in the same order.
+    + A given column has the same type, but different columns can have different types. For instance, an email message has a sender’s name, which is a string; a subject line, which is a string; a sent date, which is a date; whether it’s been read, which is a Boolean; and so on.
+    + There should only be one value per cell
+    + The rows are usually in some particular order. For instance, the emails are ordered by which was most recently sent.
+    
+### Anatomy of Structured Data
+Start with one of R's example data sets, [mtcars]('https://rpubs.com/neros/61800').
+```{r}
+data("mtcars")
+knitr::kable(head(mtcars,10))
+```
+
+* Columns = Variables, Features, Factors, Fields
+* Rows =  Observations, Records, Lines
+* Header = Column Names
+* Row Names = An index column that comes first in the data set. Usually just in the form of row numbers, but with mtcars, the row names are the actual Make/Model
+
+### Approaching a Data Set
+There is a set of a few fundamental questions that you should ask about the data set being observed. 
+
+* What is this data about?
+* What does one row represent?
+* What is the source?
+* How was it collected?
+* When was it collected, and is it being updated?
+* What kind of information do we have about each row?
+* To what extent are there missing/null/NA values?
+
+You might not be able to get answers to all of these questions, but the fact that you aren't sure on a given question per se should affect your level of skepticism and/or confidence that the data set contains relevant and accurate information that could contribute to your analysis. 
+
+### Data Types
+One of the characteristics of tabular data listed before is that a column must only have one type of data, but that different columns may have different types of data. This has multiple meanings:
+
+1. A column about the number of cylinders in the car's engine shouldn't also have some numbers describing the number of passengers it can carry. A column should represent one aspect of the rows it describes.
+2. More technically, a column must have a homogeneous data type. 
+  * The two basic types of data are continuous and discrete. 
+    + Continuous data is numeric. It can be added to or subtracted from. There are theoretically infinite values in a continuous column, only limited by the precision of the measurement. 
+    + Discrete data is categorical. It usually doesn't make sense to try to add two discrete values within a column. The extent to which math can be performed on a discrete feature is in counting the number of occurrences of each unique value in a discrete column. 
+      + Discrete values may be inherently ordered or not. Dates are discrete and ordered, ethnicities are discrete and can't be inherently ordered.
+      
+What types of columns are in the mtcars data set?
+```{r}
+str(mtcars)
+```
+
+### Putting it All to Work
+Now that we are all literate academics, let's read the Iris data set, another default R example data set.
+
+Note: With these default R data sets, you can get a lot of information about them with the command `?<datasetname>`, e.g. `?mtcars`
+
+```{r}
+data("iris")
+head(iris,15)
+rows <- sample(nrow(iris))
+iris <- iris[rows,]
+head(iris,15)
+summary(iris)
+str(iris)
+```
+
+<br>
+
+***
+
+### Conclusion
+Now we are on the same page about the concept of the word "data" and we can begin communicating! Data Literacy is becoming as critical a skill as the actual ability to read and write in modern society. It's safe to say that you will spend a significant portion of your life, professional and personal, interacting with and about data, so it's a non-starter for a person without data literacy skills to collect and discuss any kind of facts conveyed by data. This unfortunate event is what surrounds the idea of "fake news," for example. 
+
+>“Without data, you’re just another person with an opinion.”
+- W. Edwards Deming 

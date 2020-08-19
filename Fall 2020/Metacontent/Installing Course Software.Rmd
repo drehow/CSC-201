@@ -1,0 +1,36 @@
+---
+title: "Installing R / RStudio"
+author: "D. Howell"
+date: "8/17/2020"
+output: 
+  html_document:
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this class we will be using the R programming language via RStudio. R is just a high-level language that interprets your commands into operations that the computer knows how to perform. You can write R code directly into the command line, but usually you'll want to use an Integrated Development Environment (IDE), like RStudio. IDE's help developers (like yourself) organize their code into scripts (i.e. programs). When you're writing R code directly on the command line, it can be difficult to keep track of the code you've already run and it's even harder to figure out what is causing an error when one arises. 
+
+We'll get into the weeds of R and RStudio later in the course, but for now you just need to get it installed on your computer. NOTE: You should already have access to R/RStudio on the lab computers, if you prefer to go that route. 
+
+It's important to download and install the following software in the following order.
+
+1. You can download and install R [here](https://cloud.r-project.org/).
+  * If you have a Mac:
+    + Click "Download R for (Mac) OS X"
+    + On the next page, click "R-4.0.2.pkg (notarized and signed)"
+    + Open the downloaded .pkg file, and keep clicking Continue or Agree (the default buttons) until it tells you the installation was successful. 
+    + Then if it gives you the option, you can move the installer to the trash
+  * If you have a PC:
+    + Click "Download R for Windows"
+    + Click "base"
+    + Click "Download R 4.0.2 for Windows"
+    + Again, just open the downloaded file and agree/continue with all the default options until it's done. 
+  * If you have a Linux OS, then you probably know more about installing software than I do. 
+2. And RStudio [here.](https://rstudio.com/products/rstudio/download/#download)
+  * The link should take you about halfway down the page to the installers for the free version of RStudio. Just pick the one that corresponds to your OS and install with all the defaults just like you did with R. 
+
+
+Once you've installed both tools, open RStudio to make sure you don't get any errors. Let me know if you're experiencing difficulty and we can set up a time to meet and get it figured out. 

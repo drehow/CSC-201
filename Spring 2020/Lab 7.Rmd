@@ -1,0 +1,485 @@
+---
+title: "Understanding the Influence of Funding on Academic Performance in Public Schools"
+author: "Drew Howell"
+date: "3/23/2019"
+output: html_document
+---
+## Final Project Report
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+###Introduction
+It is generally understood that funding has a positive causal relationship with academic performance in public schools. Public school systems with more funding can do more things to enhance the student’s academic experience, including widening the availability of learning tools and resources and ensuring higher sustained teacher morale (therefore lowering burnout), for example. 
+
+With that knowledge as a foundation, it is the goal of this project to further detail the interaction of public school funding and academic performance on a state-by-state granularity using statistical modelling on data from the public domain and to compare which type of algorithm lends itsself best to predicting a state's academic progress. 
+
+###Data and Sources
+The data for this project was downloaded from the National Center for Education Statistics (NCES) and the U.S. Census Bureau. The specific datasets and their sources are listed below.
+
+   - Demographic data about the number of students enrolled in public schools (and the grades therein) for each state.
+        Source: NCES 
+   - Financial data about state revenue and expenditures for public education.
+        Source: U.S. Census Bureau
+   - Performance data about test scores from the 4th and 8th grade NAEP (National Assessment of Educational Progress) exams.
+        Source: NCES
+
+All datasets include data dating back from 1996 to 2017.
+
+These raw datasets are joined using Python code from a Kaggle user. The final dataset is read into this program as a CSV file named "states_all.csv".
+
+###The Program
+The rest of this report describes the program through the comments, "prologues", and the code itsself, thereby detailing the data mining approaches, results, and interpretations/conclusions.
+
+First, we read in the necessary libraries of functions.
+```{r warnings=FALSE, message=FALSE}
+# for reading in source data
+library(readr)
+# for plotting data
+library(ggplot2)
+# for getting percentile ranks to discretize dataset into thirds based on performance scores
+library(dplyr)
+# for decision tree
+library(rpart)
+# for naive bayes and svm
+library(e1071)
+# for kNN
+library(class)
+# for random forest
+library(randomForest)
+```
+
+The data is cleaned, columns are derived, and other measures are taken to prepare for modeling.
+```{r warnings=FALSE, message=FALSE}
+####################################################################################
+######################## CLEANING ##################################################
+####################################################################################
+# read in dataset
+#data <- read_csv('Desktop/652 - Final Project/states_all.csv')
+data <- read_csv('C:/Users/drew.howell/Desktop/states_all.csv')
+# drop rows with NA's and that do not describe actual states
+df <- na.omit(data[data$STATE != 'DISTRICT_OF_COLUMBIA',])
+# factorize year
+df$YEAR = as.factor(df$YEAR)
+# average 4th and 8th grade reading and math scores together to have a single y variable
+df['AggScore'] <- rowMeans(df[22:25])
+# discretize AggScore for model predictions into 0,1 column and 0,1,2 column
+df['Score2'] <- as.factor(ifelse(df$AggScore > mean(df$AggScore), 'Above Average', 'Below Average'))
+df = mutate(df, percentile_rank = ntile(df$AggScore,100))
+df['Score3']<- as.factor(ifelse(df$percentile_rank < 34, 'Poor',
+                    ifelse(df$percentile_rank < 67 & df$percentile_rank >= 34 , 'Average',
+                           ifelse(df$percentile_rank >= 67, 'Good', NA
+                           ))))
+# create columns for expenditures per student for each financial category
+df['ExpenditurePS'] <- df$TOTAL_EXPENDITURE / df$ENROLL
+df['InstructionPS'] <- df$INSTRUCTION_EXPENDITURE / df$ENROLL
+df['SupportPS'] <- df$SUPPORT_SERVICES_EXPENDITURE / df$ENROLL
+df['OtherPS'] <- df$OTHER_EXPENDITURE / df$ENROLL
+df['CapitalOutlayPS'] <- df$CAPITAL_OUTLAY_EXPENDITURE / df$ENROLL
+# create Surplus / Deficit column in discrete and continuous
+df['S/D'] <- ifelse(df$TOTAL_REVENUE - df$TOTAL_EXPENDITURE > 0, 1, 0)
+df['RemainInBudget'] <- df$TOTAL_REVENUE - df$TOTAL_EXPENDITURE
+# randomize dataset
+set.seed(1)
+df <- df[sample(nrow(df)), ]
+df <- df[sample(nrow(df)), ]
+df <- df[sample(nrow(df)), ]
+# scale predictors
+ind <- sapply(df, is.numeric)
+df[ind] <- lapply(df[ind], scale)
+```
+
+Plots are generated for both the 2 class and 3 class datasets using the two most fundamental features. All other features in the dataset are in some form a subset or derivation of these two (ENROLL, the number of students in public education for that state/year, and TOTAL_EXPENDITURE, the total of all funding put towards the education system for that year/state).
+
+The plots do not show very distinct boundaries between systems that are classified as Above and Below Average (2 class) or Poor, Average, and Good (3 class). However, it may be fair to expect that funding maay only be an accurate predictor to a certain limited degree, considering that several other factors probably also contribute to academic success within a public education system.
+```{r warnings=FALSE, message=FALSE}
+####################################################################################
+###################### VISUALIZE DATASET ###########################################
+####################################################################################
+# separate datasets to join in different colors
+  # 2 classes
+dfBelow <- df[df$Score2 == 'Below Average',]
+dfAbove <- df[df$Score2 == 'Above Average',]
+  # 3 classes
+dfPoor <- df[df$Score3 == 'Poor',]
+dfAverage <- df[df$Score3 == 'Average',]
+dfGood <- df[df$Score3 == 'Good',]
+# visualize 2 class dataset
+Boundary2groups <- ggplot() +
+  #below average
+  geom_point(data=dfBelow, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="red")  +
+  geom_smooth(data=dfBelow, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="red") +
+  #above average
+  geom_point(data=dfAbove, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color='blue') +
+  geom_smooth(data=dfAbove, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="blue") 
+Boundary2groups
+# visualize 3 class dataset
+Boundary3groups <- ggplot() +
+  #poor
+  geom_point(data=dfPoor, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="red")  +
+  geom_smooth(data=dfPoor, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="red") +
+  #average
+  geom_point(data=dfAverage, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color='blue') +
+  geom_smooth(data=dfAverage, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="blue") +
+  #good
+  geom_point(data=dfGood, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color='green') +
+  geom_smooth(data=dfGood, aes(y=TOTAL_EXPENDITURE, x=ENROLL), color="green") 
+Boundary3groups  
+```
+
+Now we apply 11 models toward the dataset (2 models for each algorithm except Linear Regression, which only predicts the 2 class dataset) and evaluate their accuracies on a test dataset, which is the last 25% of the rows from the randomized original dataset.
+
+A linear regression model is used first to inform us of the statistical significance and importance of the two variables plotted above. 
+```{r warnings=FALSE, message=FALSE}
+####################################################################################
+#################### MODELS ########################################################
+####################################################################################
+# create template x any y datasets
+predictors <- df[,c(4:21,30:36)]
+# 2 class y var
+y2 <- df$Score2
+# 3 class y var
+y3 <- df$Score3
+# create train and test datasets
+split = round(nrow(df)*0.75)
+train <- df[1:split,]
+test <- df[(split+1):nrow(df),]
+```
+```{r warnings=FALSE, message=FALSE}
+######
+# LINEAR REGRESSION
+######
+# df of selected predictors and y var
+linearDF <- data.frame(train['ExpenditurePS'],train['ENROLL'], train['AggScore'])
+# linear model
+linear <- lm(AggScore ~., data = linearDF)
+summary(linear)
+# predict test set and factorize predictions to compare with actual
+linearPred <- predict.lm(linear, newdata = test)
+linSum <- data.frame(linearPred, test$Score2, test$AggScore)
+linSum['PredFac'] <- as.factor(ifelse(linSum$linearPred > mean(linSum$linearPred),
+                                      'Above Average', 'Below Average'))
+# get accuracy as ratio of hits to total rows
+linearModAccuracy <- length(which(linSum['test.Score2'] == 'Below Average' & 
+                                    linSum['PredFac'] == 'Below Average'))/nrow(linSum)
+# create vector for accuracy table at the end
+lm <- c('Linear', round(linearModAccuracy, 2), NA)
+```
+The linear regression summary shows us that the two variables are significant options for predicting roughly 32% of the variation in academic performance, and the accuracy of the predictions reflects these stats, at about 35%. Other more complicated models are used with all of the predictor variables factored in with the hope that more details will provide more accurate predictions. But from this model, we can say that, tot eh extent that the decision boundary is linear, 35% of the variation in academic performance can be attributed to expenditures per student within a state's public education system.
+
+Next up is the k-means algorithm. An unorthodoxed analysis had to be applied to this model in order to get the accuracy of the model's "predictions" of the test dataset. The analysis is detailed in the comments of the program. As for the parameters of the models, all available algorithms were used and the most accurate is selected for the model. The number of classes selected corresponds with the number of classes in the test set. Maximum iterations was set at a value which optimizes both model computational cost and accuracy. 
+```{r warnings=FALSE, message=FALSE}
+#######
+# K MEANS (fit whole df and use last 101 obvs for "prediction")
+#######
+# k means of 2 groups
+kmeans2 <- kmeans(predictors, 2, iter.max = 100, nstart = 1,
+                 algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
+                               "MacQueen"), trace=FALSE)
+# zip classifications and actuals
+kmPred2 <- data.frame(y2, kmeans2$cluster)
+# split predictions into "test" set
+kmTrain2 <- kmPred2[1:split,]
+kmTest2 <- kmPred2[(split+1):nrow(kmPred2),]
+# create df to see which model class corresponds to which actual classification
+BelowAverage = c(nrow(kmTrain2[kmTrain2$y2=='Below Average' & kmTrain2$kmeans2.cluster == 1,])
+                 /nrow(kmTrain2[kmTrain2$kmeans2.cluster== 1,]),
+         nrow(kmTrain2[kmTrain2$y2=='Below Average' & kmTrain2$kmeans2.cluster == 2,])
+         /nrow(kmTrain2[kmTrain2$kmeans2.cluster== 2,]))
+AboveAverage = c(nrow(kmTrain2[kmTrain2$y2=='Above Average' & kmTrain2$kmeans2.cluster == 1,])
+                 /nrow(kmTrain2[kmTrain2$kmeans2.cluster== 1,]),
+            nrow(kmTrain2[kmTrain2$y2=='Above Average' & kmTrain2$kmeans2.cluster == 2,])
+            /nrow(kmTrain2[kmTrain2$kmeans2.cluster== 2,]))
+kdf2 <- data.frame(BelowAverage,AboveAverage)
+kdf2
+# We find out which class the model is saying is Below and Above Average by selecting
+#the class with the highest probability for each
+below = which(kdf2['AboveAverage'] == max(kdf2$AboveAverage))
+above = which(kdf2['BelowAverage'] == max(kdf2$BelowAverage))
+# get model accuracy
+kMeans2Accuracy <- (nrow(kmTest2[kmTest2$y2=='Below Average' & kmTest2$kmeans2.cluster == below,]) +
+  nrow(kmTest2[kmTest2$y2=='Above Average' & kmTest2$kmeans2.cluster == above,])) / nrow(kmTest2)
+# k means of 3 groups
+kmeans3 <- kmeans(predictors, 3, iter.max = 100, nstart = 1,
+                 algorithm = c("Hartigan-Wong", "Lloyd", "Forgy",
+                               "MacQueen"), trace=FALSE)
+kmPred3 <- data.frame(y3, kmeans3$cluster)
+# split predictions into "test" set
+kmTrain3 <- kmPred3[1:split,]
+kmTest3 <- kmPred3[(split+1):nrow(kmPred3),]
+# create df to see which model class corresponds to which actual classification
+poor = c(nrow(kmTrain3[kmTrain3$y3=='Poor' & kmTrain3$kmeans3.cluster == 1,])
+         /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 1,]),
+        nrow(kmTrain3[kmTrain3$y3=='Poor' & kmTrain3$kmeans3.cluster == 2,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 2,]),
+        nrow(kmTrain3[kmTrain3$y3=='Poor' & kmTrain3$kmeans3.cluster == 3,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 3,]))
+average = c(nrow(kmTrain3[kmTrain3$y3=='Average' & kmTrain3$kmeans3.cluster == 1,])
+            /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 1,]),
+        nrow(kmTrain3[kmTrain3$y3=='Average' & kmTrain3$kmeans3.cluster == 2,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 2,]),
+        nrow(kmTrain3[kmTrain3$y3=='Average' & kmTrain3$kmeans3.cluster == 3,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 3,]))
+good = c(nrow(kmTrain3[kmTrain3$y3=='Good' & kmTrain3$kmeans3.cluster == 1,])
+         /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 1,]),
+        nrow(kmTrain3[kmTrain3$y3=='Good' & kmTrain3$kmeans3.cluster == 2,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 2,]),
+        nrow(kmTrain3[kmTrain3$y3=='Good' & kmTrain3$kmeans3.cluster == 3,])
+        /nrow(kmTrain3[kmTrain3$kmeans3.cluster== 3,]))
+kdf3 <- data.frame(poor,average,good)
+kdf3
+# We find out which class the model is saying is Poor, Average, and Good by selecting 
+#the class with the highest probability for each
+poor = which(kdf3['poor'] == max(kdf3$poor))
+average = which(kdf3['average'] == max(kdf3$average))
+good = ifelse(average == 1 & poor == 3,2,
+        ifelse(average == 3 & poor == 1,2,
+         ifelse(average == 2 & poor == 3,1,
+          ifelse(average == 3 & poor == 2,1,
+           ifelse(average == 2 & poor == 1,3,
+            ifelse(average == 1 & poor == 2,3,NA))))))
+# get model accuracy
+kMeans3Accuracy <- (nrow(kmTest3[kmTest3$y3=='Good' & kmTest3$kmeans3.cluster == good,]) +
+  nrow(kmTest3[kmTest3$y3=='Average' & kmTest3$kmeans3.cluster == average,]) +
+  nrow(kmTest3[kmTest3$y3=='Poor' & kmTest3$kmeans3.cluster == poor,])) / nrow(kmTest3)
+# create vector for accuracy table at the end
+km <- c('k-Means', round(kMeans2Accuracy, 2), round(kMeans3Accuracy, 2))
+```
+
+A decision tree is used to predict the test set. minsplit and cp are set to values that minimize overfitting and thus, prediction accuracy.
+```{r warnings=FALSE, message=FALSE}
+################
+# decision tree
+################
+# split train and test datasets for DT models
+splitPred = round(nrow(predictors)*0.75)
+trainClass <- predictors[1:splitPred,]
+testClass <- predictors[(splitPred+1):nrow(predictors),]
+# y vars for 2 and 3 class
+y2dtrain <- y2[1:302]
+y3dtrain <- y3[1:302]
+# join x and y datasets to use formula in RF function
+dt2DF <- data.frame(trainClass, y2dtrain) 
+dt3DF <- data.frame(trainClass, y3dtrain) 
+# ensure no NAs
+dt2df<-dt2DF[complete.cases(dt2DF),]
+dt3df<-dt3DF[complete.cases(dt3DF),]
+# make var names in test and train identical
+testClass['S.D']=testClass['S/D']
+testClass=testClass[,-24]
+trainClass['S.D']=trainClass['S/D']
+trainClass=trainClass[,-24]
+# DT on 2 classes
+# set control parameters
+control=rpart.control(minsplit=50, cp=0.1)
+# DT model
+dt2 <- rpart(dt2DF$y2dtrain~., data = dt2df, method = 'class', control = control)
+# get predictions, factorize, and compare to actuals
+dt2pred <- predict(dt2, newdata = testClass)
+dt2pred <- data.frame(dt2pred)
+dt2pred['dt2predFac'] <- ifelse(dt2pred['Above.Average'] > 0.5, 'Above Average', 'Below Average')
+y2dtest <- y2[303:403]
+dt2pred <- data.frame(dt2pred, y2dtest)
+# get model accuracy
+dt2Accuracy <- (nrow(dt2pred[dt2pred$dt2predFac=='Below Average' & 
+                               dt2pred$y2dtest == 'Below Average',]) +
+                      nrow(dt2pred[dt2pred$dt2predFac=='Above Average' & 
+                                     dt2pred$y2dtest == 'Above Average',])) / nrow(dt2pred)
+# DT on 3
+# set control parameters
+control=rpart.control(minsplit=5, cp=0.01)
+# DT model
+dt3 <- rpart(dt3DF$y3dtrain~., data = dt3df, method = 'class', control = control)
+# get predictions, factorize, and compare to actuals
+dt3pred <- predict(dt3, newdata = testClass)
+dt3pred <- data.frame(dt3pred)
+dt3pred['dt3predFac'] <- ifelse(dt3pred['Good'] > dt3pred['Average'] & 
+                                  dt3pred['Good'] > dt3pred['Poor'], 'Good', 
+                                ifelse(dt3pred['Average'] > dt3pred['Good'] &
+                                         dt3pred['Average'] > dt3pred['Poor'], 'Average',
+                                       ifelse(dt3pred['Poor'] > dt3pred['Good'] & 
+                                                dt3pred['Poor'] > dt3pred['Average'], 'Poor',NA)))
+y3dtest <- y3[303:403]
+dt3pred <- data.frame(dt3pred, y3dtest)
+# get model accuracy
+dt3Accuracy <- (nrow(dt3pred[dt3pred$dt3predFac=='Good' & dt3pred$y3dtest == 'Good',]) +
+                  nrow(dt3pred[dt3pred$dt3predFac=='Average' & dt3pred$y3dtest == 'Average',]) +
+                     nrow(dt3pred[dt3pred$dt3predFac=='Poor' & dt3pred$y3dtest == 'Poor',])) / 
+                         nrow(dt3pred)
+# create vector for accuracy table at the end
+dt <- c('Decision Tree', round(dt2Accuracy, 2), round(dt3Accuracy, 2))
+```
+
+Next we use a naive bayes model. The accuracy of this model on predicting classifications of the test set was robust, meaning that laplace smoothing had a negligible effect on accuracy. Therefore, laplace smoothing was set to +1 to prevent multipliers of 0 value and the rest of the model is default. 
+```{r warnings=FALSE, message=FALSE}
+################
+# naive Bayes
+################
+# naive Bayes on 2 classes
+# x and y datasets for 2 class NB model
+nb2trainX <- trainClass
+nb2trainY <- y2[1:302]
+# Naive Bayes model
+nb2Model <- naiveBayes(nb2trainX, nb2trainY, laplace = 1)
+# get predictions and compare to actuals
+nb2Pred <- predict(nb2Model, newdata = testClass)
+nb2Tfac <- y2[303:403]
+nb2Pred <- data.frame(nb2Pred,nb2Tfac)
+# get model accuracy
+nb2Accuracy <- (nrow(nb2Pred[nb2Pred$nb2Pred=='Below Average' & 
+                               nb2Pred$nb2Tfac == 'Below Average',]) +
+                  nrow(nb2Pred[nb2Pred$nb2Pred=='Above Average' & 
+                                 nb2Pred$nb2Tfac == 'Above Average',]))/
+                                     nrow(nb2Pred)
+# naive Bayes on 3 classes
+# x and y datasets for 3 class NB model
+nb3trainX <- trainClass
+nb3trainY <- y3[1:302]
+# Naive Bayes model
+nb3Model <- naiveBayes(nb3trainX, nb3trainY, laplace = 1)
+# get predictions and compare to actuals
+nb3Pred <- predict(nb3Model, newdata = testClass)
+nb3Tfac <- y3[303:403]
+nb3Pred <- data.frame(nb3Pred,nb3Tfac)
+# get model accuracy
+nb3Accuracy <- (nrow(nb3Pred[nb3Pred$nb3Pred=='Good' & 
+                               nb3Pred$nb3Tfac == 'Good',]) +
+                  nrow(nb3Pred[nb3Pred$nb3Pred=='Average' & 
+                                 nb3Pred$nb3Tfac == 'Average',]) +
+                     nrow(nb3Pred[nb3Pred$nb3Pred=='Poor' & 
+                                    nb3Pred$nb3Tfac == 'Poor',]))/
+                                       nrow(nb3Pred)
+# create vector for accuracy table at the end
+nb <- c('Naive Bayes',round(nb2Accuracy, 2), round(nb3Accuracy, 2))
+```
+
+A support vector machine is built next to predict the test set classifications. Interestingly, a linear kernel was much less accurate in the 3 class predictions than a radial kernel, and the results of radial and linear kernels were very similar in the 2 class predictions. Relatively high gamma values are set to prevent the model from overfitting (using low gamma values causes a single example in the training process to reach "further" than higher values allow) and to increase prediction accuracy as a result.
+```{r warnings=FALSE, message=FALSE}
+################
+# SVM
+################
+#SVM on 2 classes
+# x and y datasets for 2 class SVM model
+svm2trainX <- trainClass
+svm2trainY <- y2[1:302]
+# SVM model
+svm2Model <- svm(svm2trainX, svm2trainY, kernel = "radial", gamma = 0.5)
+# get predictions and compare to actuals
+svm2Pred <- predict(svm2Model, newdata = testClass)
+svm2Tfac <- y2[303:403]
+svm2Pred <- data.frame(svm2Pred,svm2Tfac)
+# get model accuracy
+svm2Accuracy <- (nrow(svm2Pred[svm2Pred$svm2Pred=='Below Average' & 
+                                 svm2Pred$svm2Tfac == 'Below Average',]) +
+                  nrow(svm2Pred[svm2Pred$svm2Pred=='Above Average' & 
+                                  svm2Pred$svm2Tfac == 'Above Average',]))/
+                                     nrow(svm2Pred)
+#SVM on 3 classes
+# x and y datasets for 3 class SVM model
+svm3trainX <- trainClass
+svm3trainY <- y3[1:302]
+# SVM model
+svm3Model <- svm(svm3trainX, svm3trainY, kernel = "radial", gamma = 0.75)
+# get predictions and compare to actuals
+svm3Pred <- predict(svm3Model, newdata = testClass)
+svm3Tfac <- y3[303:403]
+svm3Pred <- data.frame(svm3Pred,svm3Tfac)
+# get model accuracy
+svm3Accuracy <- (nrow(svm3Pred[svm3Pred$svm3Pred=='Good' & 
+                                 svm3Pred$svm3Tfac == 'Good',]) +
+                  nrow(svm3Pred[svm3Pred$svm3Pred=='Average' & 
+                                  svm3Pred$svm3Tfac == 'Average',]) +
+                  nrow(svm3Pred[svm3Pred$nb3svm3PredPred=='Poor' & 
+                                  svm3Pred$svm3Tfac == 'Poor',])) /
+                                       nrow(svm3Pred)
+# create vector for accuracy table at the end
+svm <- c('Support Vector Machine', round(svm2Accuracy, 2), round(svm3Accuracy, 2))
+```
+
+A k-Nearest Neighbor algorithm is used next. k values were determined by the highest prediction accuracy. Interestingly, k=1 in the 2 class model resulted in the highest accuracy of all other k-values attempted, and actually resulted in one the most accurate 2 class predictions in this project at roughly 80%. 
+```{r warnings=FALSE, message=FALSE}
+################
+# kNN
+################
+# kNN on 2 classes
+# y var for knn 2 class model
+cl2 =  as.vector(y2[1:302])
+#kNN model
+knn2Model <- knn(trainClass, testClass, cl2, k=1)
+# get predictions and compare to actuals
+knn2Tfac <- y2[303:403]
+knn2Pred <- data.frame(knn2Model,knn2Tfac)
+# get model accuracy
+knn2Accuracy <- (nrow(knn2Pred[knn2Pred$knn2Model=='Below Average' & 
+                                 knn2Pred$knn2Tfac == 'Below Average',]) +
+                   nrow(knn2Pred[knn2Pred$knn2Model=='Above Average' & 
+                                   knn2Pred$knn2Tfac == 'Above Average',]))/
+                                       nrow(knn2Pred)
+#kNN on 3 classes
+# y var for knn 2 class model
+cl3 =  as.vector(y3[1:302])
+#kNN model
+knn3Model <- knn(trainClass, testClass, cl3, k=4)
+# get predictions and compare to actuals
+knn3Tfac <- y3[303:403]
+knn3Pred <- data.frame(knn3Model,knn3Tfac)
+# get model accuracy
+knn3Accuracy <- (nrow(knn3Pred[knn3Pred$knn3Model=='Good' & 
+                                 knn3Pred$knn3Tfac == 'Good',]) +
+                   nrow(knn3Pred[knn3Pred$knn3Model=='Average' & 
+                                   knn3Pred$knn3Tfac == 'Average',]) +
+                   nrow(knn3Pred[knn3Pred$knn3Model=='Poor' & 
+                                   knn3Pred$knn3Tfac == 'Poor',])) /
+                                       nrow(knn3Pred)
+# create vector for accuracy table at the end
+knn <- c('k-Nearest-Neighbors', round(knn2Accuracy, 2), round(knn3Accuracy, 2))
+```
+
+Finally, we implement a random forest model on the 2 and 3 class datasets. These models took the longest to compute (there was a negligible difference in computation time of all other models), but are also the most accurate on average. values for ntree, mtry, and maxnodes were set to maximize prediction accuracy on the test set and minimize computational load.
+```{r warnings=FALSE, message=FALSE}
+################
+# Random Forest
+################
+# Random Forest on 2 classes
+# y var for 2 class RF model
+rfy2 =  as.factor(y2[1:302])
+# Random Forest Model
+rf2Model <- randomForest(trainClass, rfy2, ntree = 750, mtry = 5, maxnodes = 200)
+# get predictions and compare to actuals
+rf2predic <- as.factor(predict(rf2Model, testClass))
+rf2Tfac <- y2[303:403]
+# get model accuracy
+rf2Accuracy <- sum(rf2predic == rf2Tfac) / length(rf2predic)
+# Random Forest on 3 classes
+# y var for 3 class RF model
+rfy3 =  as.factor(y3[1:302])
+# Random Forest Model
+rf3Model <- randomForest(trainClass, rfy3, ntree = 750, mtry = 5, maxnodes = 250)
+# get predictions and compare to actuals
+rf3predic <- as.factor(predict(rf3Model, testClass))
+rf3Tfac <- y3[303:403]
+# get model accuracy
+rf3Accuracy <- sum(rf3predic == rf3Tfac) / length(rf3predic)
+# create vector for accuracy table at the end
+rf <- c('Random Forest', round(rf2Accuracy, 2), round(rf3Accuracy, 2))
+```
+
+Now that all the models are built, tuned, used to predict the test set, and subsequently evaluated on the accuracy metric, we tabulate their accuracies on the 2 class and 3 class predictions for simple comparison. Keep in mind that all the accuracies on the table reflect each model's most accurate predictions, given several trial runs of different tuning parameters for each. Therefore, we can confidently evaluate which model is best suited for this dataset. 
+```{r warnings=FALSE, message=FALSE, results=FALSE}
+################
+# table of model accuracies
+################
+# y2 y3 lm2 km2 km3 dt2 dt3 nb2 nb3 svm2 svm3 knn2 knn3 rf2 rf3
+cols <- c('Model', 'Accuracy (2 Classes)', 'Accuracy (3 Classes)')
+accuracies <- data.frame(cols, lm, km, dt, nb, svm, knn, rf)
+accuracies
+```
+```{r echo=FALSE, results='asis'}
+library(knitr)
+kable(accuracies, caption = 'Model Prediction Accuracies')
+```
+
+
+###Conclusions
+Looking back at the visualization of the decision boundaries for our dataset, the more complex models clearly used the extra derived and subsetted predictors to develop complicated and sometimes multi-dimensional (SVM) decision boundaries to further separate performance classifications. In general, a binary classification dataset resulted in higher Kappa values than the 3 class datasets, so we can theorize that the boundary between Above/Below Average is much more distinct than the boundary between Poor/Average/Good. 
+
+This analysis is important because it signifies how critical funding is to the academic success of a public education system. This project has clarified my political views in that a candidate's prioritization of funding for public education is more important now to me as a voter. As mentioned earlier in this report, countless other factors probably contribute to academic performance, such as quality of sleep for students and teachers, education level of instructors, perceived importance of education between state cultures, etc. So the fact that a random forest model can predict whether your state will be Above or Below Average with 85% accuracy using only the state's financial and enrollment statistics gives profound meaning to what's in your state's public education budget.
