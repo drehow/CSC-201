@@ -1,5 +1,5 @@
 ---
-title: "Installing R / RStudio"
+title: "Installing R / RStudio (dep)"
 author: "D. Howell"
 date: "8/17/2020"
 output: 
