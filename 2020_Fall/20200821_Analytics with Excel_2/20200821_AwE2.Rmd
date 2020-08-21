@@ -1,0 +1,23 @@
+---
+title: "Analytics with Excel, Pt. II"
+author: "D. Howell"
+date: "8/21/2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Prompt
+
+How do infections as a percentage of population differ between OK and the national average for the last 100 days?
+
+### Data Links
+* [US Census 2019 Population by State](https://www.census.gov/data/tables/time-series/demo/popest/2010s-state-total.html#par_textimage)
+
+* [US COVID-19 Cases by State](https://github.com/nytimes/covid-19-data/blob/master/us-states.csv)
