@@ -1,0 +1,30 @@
+---
+title: "Lab 1"
+author: "D. Howell"
+date: "8/21/2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Prompt
+Tulsa and Oklahoma City mandated masks to be worn in public, indoor places on July 15 and 17, respectively. Now that we're over a month into the mask mandate, I'm wondering if it's been effective at slowing the spread of the virus or not. Using the data supplied at the links below, build an analysis of infection rates by county in Oklahoma. Compare the rates of infection in counties with the mask mandate vs counties without the mask mandate and report your conclusions to me. 
+
+Some questions I'm wondering about specifically are:
+
+* Are cases Tulsa and OKC rising significantly slower than the rest of OK?
+* How did the rates in Tulsa and OKC compare to the rest of the state before the mask mandate?
+* How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population?
+
+This lab data needs to be analyzed in Excel and reported in the text editing software of your choice. Find links to the data below:
+
+* [County-level COVID-19 infections and deaths from the New York Times](https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv)
+* [County-level population](https://www.census.gov/data/tables/time-series/demo/popest/2010s-state-total.html#par_textimage)
+
+Be sure to support your conclusions with visualizations and relevant statistics from your analysis. Submit your Excel analysis and your report document in the Lab 1 dropbox on D2L. This lab assignment is due in two weeks, on Sep. 4, 2020.
