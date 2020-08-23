@@ -25,6 +25,6 @@ Some questions I'm wondering about specifically are:
 This lab data needs to be analyzed in Excel and reported in the text editing software of your choice. Find links to the data below:
 
 * [County-level COVID-19 infections and deaths from the New York Times](https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv)
-* [County-level population](https://github.com/drehow/CSC-201/blob/master/2020_Fall/20200821_Analytics%20with%20Excel_2/OK_county_populations.xlsx)
+* [County-level population](https://github.com/drehow/CSC-201/blob/master/2020_Fall/Lab%201/OK_county_populations.xlsx)
 
 Be sure to support your conclusions with visualizations and relevant statistics from your analysis. Submit your Excel analysis and your report document in the Lab 1 dropbox on D2L. This lab assignment is due in two weeks, on Sep. 4, 2020.
