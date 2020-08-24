@@ -5,8 +5,8 @@ date: "8/23/2020"
 output: 
   html_document:
     theme: flatly
-    toc: false
-    toc_float: false
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -15,43 +15,118 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***
 
-An IDE, or Integrated Development Environment, enables programmers to consolidate the different aspects of writing a computer program.
+### Introduction
 
-IDEs increase programmer productivity by combining common activities of writing software into a single application: editing source code, building executables, and debugging.
+By nature, the most basic form of interaction with a computer takes place on the command line. I'm writing this on my work computer, a Windows PC, so to open a window to write commands to the computer directly, I'm going to open Command Prompt. 
+
+![Fig. 1](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture1.jpg)
+
+
+From here, you can do everything that you normally would do on your computer, except there is no Graphic User Interface (GUI) that allows me to click, drag and drop, etc. Instead, this is a Command Line Interface (CLI), which means anything we want to do, we have to enter an appropriate command. 
+
+Let's say, for instance, that I want to open Google Chrome. Normally, I would go to my desktop and click the Chrome shortcut:
+
+![Fig. 2](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture2.jpg)
+
+That shortcut is part of the Windows interface that, when double-clicked, opens a command prompt terminal in the background and runs the command to open Google Chrome. You can see the command it runs when you right-click the shortcut and go to Propterties. The command is highlighted below (it is simply the file path for the location of the Google Chrome application, in quotes).
+
+![Fig. 3](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture3.jpg)
+
+But if we wanted to do it ourselves without using the Windows GUI, we just put that command (the file path to the application in quotes) in the terminal.
+
+![Fig. 4](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture4.jpg)
+
+I push enter, and Google Chrome pops up in a new window just like it would if I double-clicked the shortcut. Voila!
+
+***
+
+The R programming language itself is designed to be used in this way. It's just a language: no GUI, no frills... just write your commands into the command line and if you didn't screw up, it works. You would "start an R session" (read, "open R") the same as you did Chrome just now: by pointing the terminal towards the R application. Below is the command specific to my computer (your computer's path to R will look similar).
+
+![Fig. 5](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture5.jpg)
+
+![Fig. 6](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture6.jpg)
+
+Now we have an open R session in the command line. Let's try a couple of simple R commands to illustrate. 
+
+![Fig. 7](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture7.jpg)
+
+Notice that the main issue with this method of programming in R is that you would have to manually enter each line of an R program one-at-a-time, perfectly, and in order, to get the results of your analysis. 
+
+One possible solution for this would be to build your R program in a text editor and save it as an R file by putting the extension ".R" at the end instead of the normal ".txt" for text files. Then you would go back to R in the terminal and use the source() function to run the R program. 
+
+![Fig. 8](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture8.jpg)
+
+![Fig. 9](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture9.jpg)
+
+Whoops... looks like there was an error. I could try to go back into notepad, find and correct the error, then go back to the command line and run it again to see if I get the output I want, or I could just do it in RStudio, the IDE we're using for R in this class.
+
+An Integrated Development Environment (IDE) enables developers to consolidate the different aspects of writing a computer program. In other words, it takes all of these steps we've been taking to write a program with Notepad and the terminal, and organizes them, making it easier and faster to write code. 
 
 Writing code is an important part of programming. We start with a blank file, write a few lines of code, and a program is born! IDEs facilitate this process with the features outlined below.
 
 ***
 
-####1. BUILDING EXECUTABLES
+### 1. BUILDING EXECUTABLES (SCRIPTING)
+
+What we were trying to do in notepad is called building an executable. In this case, an executable is a standalone R program that runs multiple lines of R code at a time. Usually in the R ecosystem, we refer to executables as scripts or programs ("executable" is a more universal term across different languages).
+
+RStudio allows you to build a program in the Script window. It's advantageous compared to the Notepad/terminal combo because you can execute your script in the Console window, which is typically right below the Script window. This saves you from explicitly typing each line into the console. 
+
+Here's our program in the Script window:
+
+![Fig. 10](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture10.jpg)
+
+Now we can see specifically what line our error is occuring on, and that there is another error present in our code that we hadn't yet discovered in the terminal. Now we can correct the errors and quickly run the program again.
+
+![Fig. 11](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture11.jpg)
+
+Now it looks like our program is not getting errors and is returning the output we wanted to see. 
+
+Building scripts and finding/correcting errors is much easier when you have an IDE.
 
 ***
 
-####2. SYNTAX HIGHLIGHTING
+### 2. SYNTAX HIGHLIGHTING
 
-An IDE that knows the syntax of your language can provide visual cues. Keywords, words that have special meaning like class in Java, are highlighted with different colors.
+An IDE that knows the syntax of your language can provide visual cues. Keywords, words that have special meaning like print() in R, are highlighted with different colors.
 
 Compare these two code samples:
 
-example 1 picture
+![Fig. 12](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture12.jpg)
 
-example 2 picture
+![Fig. 13](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture13.jpg)
 
 Syntax highlighting makes code easier to read by visually clarifying different elements of language syntax.
 
 ***
 
-####3. AUTOCOMPLETE
+### 3. AUTOCOMPLETE
 
-When the IDE knows your programming language, it can anticipate what you’re going to type next!
+When the IDE knows your programming language, it can anticipate what you’re going to type next.
 
-We’ve seen statements with System.out.println() quite a bit so far. In an IDE, we might see System as an autocomplete option after only typing Sy. This saves keystrokes so the programmer can focus on logic in their code.
-
-####4. OBJECT EXPLORER
+We've been looking at the print() function so far. In an IDE, we might see print() as an autocomplete option after only typing "pr", at which point, you just push Tab and it types it for you. This saves keystrokes so the programmer can focus on logic in their code.
 
 ***
 
-####5. OTHER AUXILIARY FEATURES 
+### 4. OBJECT EXPLORERS
+
+Sometimes in bigger programs, you create and manipulate a lot of variables and it can be hard to remember what each variable represents after awhile as you're building your script. RStudio helps with this in part by displaying a list of the variables you've made during that R session along with a description of the variables.
+
+![Fig. 14](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture14.jpg)
+
+What's more is that you can click on myTable in that window and RStudio will display its contents in a new window. 
+
+![Fig. 15](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/Capture15.jpg)
+
+It's hard to keep track of all the objects you're working with in a program that has several sections. RStudio takes the need to be on top of that out of the developer's head so that they can focus more on next steps. 
+
+***
+
+### 5. OTHER AUXILIARY FEATURES 
+
+There are many more features of RStudio that make it an appealing alternative to the command line, including a File Explorer, Plot Viewer, R Markdown capabilities, and more. We will explore these features as we become more familiar with RStudio throughout the course. 
+
+Bottom line: whatever language you find yourself using, make sure you're using an IDE. It has a positive compound effect on a developer's efficiency, and more importantly, it gives you more room to engage with the enjoyable parts of programming by keeping track of the mundane parts.  
 
 ***
 
