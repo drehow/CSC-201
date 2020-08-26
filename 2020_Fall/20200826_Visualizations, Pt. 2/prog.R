@@ -1,97 +1,18 @@
----
-title: "Data Visualization, Pt. 1"
-author: "D. Howell"
-date: "8/23/2020"
-output: 
-  html_document:
-    theme: flatly
-    toc: true
-    toc_float: true
----
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-***
-
-### You are here
-
-![](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/programGraphic_visualize.jpg)
-
-***
-
-### Packages
-
->"In R, the fundamental unit of shareable code is the package. A package bundles together code, data, documentation, and tests, and is easy to share with others. As of January 2015, there were over 6,000 packages available on the Comprehensive R Archive Network, or CRAN, the public clearing house for R packages. This huge variety of packages is one of the reasons that R is so successful: the chances are that someone has already solved a problem that you’re working on, and you can benefit from their work by downloading their package."
-- Hadley Wickham, "R Packages"
-
-![](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/JPEG_CraftsmanAnalogy.jpg)
-
-So let's install our first package, the one we will be using for visualizations in R: ggplot2.
-```{r}
-# install.packages('ggplot2')
-```
-
-And now that it is installed, let's load all of its functions into our R session.
-```{r}
-library(ggplot2)
-```
-
-### Your first graph in R
-```{r}
-# visualize the first few rows of the mpg data set
-head(mpg)
-
-# now graph hwy against displ
-ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displ, y = hwy))
-
-```
-
-Cute! Take a photo and send it to your fam. 
-
-### A graphing template
-
-![](\\Users\\drew.howell\\Desktop/CSC-201/2020_Fall/20200824_Beginning with R ... Visualizing Data/graphingTemplate.jpg)
-
-Here is a cheat sheet for some of the other popular geom functions you can use (read, "other popular types of charts you can make").
-
-[ggplot2 Cheat Sheet](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
-
-### The NYT Coronavirus Data
-
-Let's see if we can use this template to visualize some of the COVID data we worked with last week. 
-
-First, we need to read the data into our R session. Don't worry about the mechanics of this yet - we'll get to it later.
-
-```{r}
 if (!require(readr)) install.packages('readr')
 library(readr)
+library(ggplot2)
 
 covidData <- read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
-```
-
-Looks like it read in fine. Now let's filter out everything but Oklahoma.
-```{r}
 covidData_OK <- covidData[covidData$state == 'Oklahoma',]
 
 ggplot(data = covidData_OK) + 
   geom_line(mapping = aes(x = date, y = cases))
 
-```
-
-There's some cleaning to be done here, but we'll learn how to do that later. 
-
-Let's compare it to New York.
-```{r}
 covidData_NY <- covidData[covidData$state == 'New York',]
 
 ggplot(data = covidData_NY) + 
   geom_line(mapping = aes(x = date, y = cases))
-```
-
-```{r}
 covidData_yesterday <- covidData[covidData$date == as.character(Sys.Date()-1),]
 ggplot(data = covidData_yesterday) + 
   geom_point(mapping = aes(x = cases, y = deaths)) + 
@@ -105,23 +26,8 @@ ggplot(data = covidData_yesterdayNoNY) +
   geom_point(mapping = aes(x = cases, y = deaths)) + 
   geom_smooth(mapping = aes(x = cases, y = deaths))
 
-```
-There's a weird outlier way above 30k deaths. Curious what state that is. 
-```{r}
 covidData_yesterday[covidData_yesterday$deaths>30000,]
-```
-Wonder where OK is on the graph...
-```{r}
 covidData_yesterday[covidData_yesterday$state=='Oklahoma',]
-```
-So somewhere very close to the origin. Doesn't necessarily make us safer though, it is likely just because of our relatively small population. NYC has over twice as many people than OK... maybe their situation is worse in part due to the crazy population density there. 
-
-
-### aesthetic mappings
-
-I want to visualize the concentrations of covid by state, which serves to take the differences in populations out of the picture. 
-
-```{r}
 library(readr)
 library(dplyr)
 stPops <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200821_Analytics%20with%20Excel_2/nst-est2019-alldata.csv')
@@ -133,17 +39,13 @@ covidData <- left_join(covidData,stPops, by = c('state'='NAME'))
 covidData$per100k <- round(covidData$cases / covidData$POPESTIMATE2019 * 10000,2)
 covidData <- covidData[!is.na(covidData$per100k),]
 
-```
-
-```{r}
 ggplot(data = covidData) + 
   geom_point(mapping = aes(x = date, y = per100k
                           #, group = state, color = state
                           ))
-```
 
-
-```{r}
+ggplot(data = covidData) + 
+  geom_line(mapping = aes(x = date, y = per100k, group = state))
  votes <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200824_Beginning%20with%20R%20...%20Visualizing%20Data/1976-2016-president.csv')
 
 library(scales)
@@ -163,8 +65,7 @@ covidData <- left_join(covidData, votes)
 covidData$population <- covidData$POPESTIMATE2019
 covidData$POPESTIMATE2019 <- NULL
 
-ggplot(data = covidData) + 
-  geom_line(mapping = aes(x = date, y = per100k, group = state))
+
 
 ggplot(data = covidData) + 
   geom_line(mapping = aes(x = date, y = per100k, group = state, color = voted))
@@ -222,36 +123,40 @@ ggplot(data = covidData) +
 
 
 ggplot(data = covidData) + 
-  geom_line(mapping = aes(x = date, y = per100k, group = state
-                          , color = voted, alpha = population
+  geom_line(mapping = aes(x = date, 
+                          y = per100k, 
+                          group = state
+                          , color = voted, 
+                          alpha = population
                           )) + 
- scale_alpha_continuous(labels = comma) +
- scale_x_date(date_breaks = "1 month",
+  scale_alpha_continuous(labels = comma) +
+  scale_x_date(date_breaks = "1 month",
                 labels = date_format("%B"),
                 limits = as.Date(c('2020-03-15','2020-08-23'))) +
- scale_color_manual(values=c('#002fd9','#d90000')) +
- labs(title="COVID Cases by State", subtitle="Data as of 8/25/2020", y="Cases per 100k People", x="Date (2020)", caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
- theme_classic() +
- theme(legend.position = c(0.11, 0.67))
+  scale_color_manual(values=c('#002fd9','#d90000')) +
+  labs(title="COVID Cases by State", 
+      subtitle="Data as of 8/25/2020", 
+      y="Cases per 100k People", 
+      x="Date (2020)", 
+      caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
+  theme_classic() +
+  theme(legend.position = c(0.11, 0.67))
   
 
-covidData_party <- covidData %>% group_by(date, voted) %>% summarise(per100k = mean(per100k))
+covidData_party <- covidData %>% 
+  group_by(date, voted) %>% 
+  summarise(per100k = mean(per100k))
 
 ggplot(data = covidData_party) + 
   geom_line(mapping = aes(x = date, y = per100k, group = voted, color = voted))
 
-```
-  * shape
-  * color
-  * size
-  * fill
-  * linetype
-  * lineend
-  * label
-  * family (font)
-  * fontface
 
-### geom_functions - cheat sheet
+ggplot(data = covidData[covidData$date == max(covidData$date),]) + 
+  geom_boxplot(mapping = aes(x = voted, y = cases)) 
++ 
+  coord_cartesian(ylim = c(0,8000))
+
+
 
 
 
