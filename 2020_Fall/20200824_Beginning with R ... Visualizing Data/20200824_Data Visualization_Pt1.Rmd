@@ -105,3 +105,21 @@ Wonder where OK is on the graph...
 covidData_yesterday[covidData_yesterday$state=='Oklahoma',]
 ```
 So somewhere very close to the origin. Doesn't necessarily make us safer though, it is likely just because of our realatively small population. NYC has over twice as many people than OK... maybe their situation is worse in part due to the crazy population density there. 
+
+
+### aesthetic mappings
+  
+  * shape
+  * color
+  * size
+  * fill
+  * linetype
+  * lineend
+  * label
+  * family (font)
+  * fontface
+
+### geom_functions - cheat sheet
+
+
+
