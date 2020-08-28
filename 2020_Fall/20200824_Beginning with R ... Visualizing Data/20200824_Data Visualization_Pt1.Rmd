@@ -222,17 +222,24 @@ ggplot(data = covidData) +
 
 
 ggplot(data = covidData) + 
-  geom_line(mapping = aes(x = date, y = per100k, group = state
-                          , color = voted, alpha = population
+  geom_line(mapping = aes(x = date, 
+                          y = per100k, 
+                          group = state
+                          , color = voted, 
+                          alpha = population
                           )) + 
- scale_alpha_continuous(labels = comma) +
- scale_x_date(date_breaks = "1 month",
+  scale_alpha_continuous(labels = comma) +
+  scale_x_date(date_breaks = "1 month",
                 labels = date_format("%B"),
                 limits = as.Date(c('2020-03-15','2020-08-23'))) +
- scale_color_manual(values=c('#002fd9','#d90000')) +
- labs(title="COVID Cases by State", subtitle="Data as of 8/25/2020", y="Cases per 100k People", x="Date (2020)", caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
- theme_classic() +
- theme(legend.position = c(0.11, 0.67))
+  scale_color_manual(values=c('#002fd9','#d90000')) +
+  labs(title="COVID Cases by State", 
+      subtitle="Data as of 8/25/2020", 
+      y="Cases per 100k People", 
+      x="Date (2020)", 
+      caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
+  theme_classic() +
+  theme(legend.position = c(0.11, 0.67))
   
 
 covidData_party <- covidData %>% group_by(date, voted) %>% summarise(per100k = mean(per100k))

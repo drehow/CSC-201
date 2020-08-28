@@ -199,8 +199,7 @@ ggplot(data = covidData_party) +
 
 
 ggplot(data = covidData[covidData$date == max(covidData$date),]) + 
-  geom_boxplot(mapping = aes(x = voted, y = cases)) 
-+ 
+  geom_boxplot(mapping = aes(x = voted, y = cases)) + 
   coord_cartesian(ylim = c(0,8000))
 
 
