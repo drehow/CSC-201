@@ -68,6 +68,9 @@ votes <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_
 
 
 # needed some functions from these libraries based on examples I found online
+if (!require(scales)) install.packages('scales')
+if (!require(tidyr)) install.packages('tidyr')
+
 library(scales)
 library(tidyr)
 

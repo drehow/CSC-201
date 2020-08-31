@@ -5,8 +5,8 @@ date: "8/21/2020"
 output: 
   html_document:
     theme: flatly
-    toc: true
-    toc_float: true
+    toc: false
+    toc_float: false
 ---
 
 ```{r setup, include=FALSE}
@@ -18,13 +18,26 @@ Tulsa and Oklahoma City mandated masks to be worn in public, indoor places on Ju
 
 Some questions I'm wondering about specifically are:
 
-* Are cases Tulsa and OKC rising significantly slower than the rest of OK?
+* Are cases in Tulsa County (Tulsa) and Oklahoma County (OKC) rising significantly slower than the rest of OK?
 * How did the rates in Tulsa and OKC compare to the rest of the state before the mask mandate?
-* How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population?
+* How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population? 
 
 This lab data needs to be analyzed in Excel and reported in the text editing software of your choice. Find links to the data below:
 
-* [County-level COVID-19 infections and deaths from the New York Times](https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv)
-* [County-level population](https://github.com/drehow/CSC-201/blob/master/2020_Fall/Lab%201/OK_county_populations.xlsx)
+* [County-level COVID-19 infections and deaths from the New York Times](https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv){target="_blank"}
+* [County-level population](https://github.com/drehow/CSC-201/blob/master/2020_Fall/Lab%201/OK_county_populations.xlsx){target="_blank"}
 
-Be sure to support your conclusions with visualizations and relevant statistics from your analysis. Submit your Excel analysis and your report document in the Lab 1 dropbox on D2L. This lab assignment is due in two weeks, on Sep. 4, 2020.
+Be sure to support your conclusions with visualizations and relevant statistics from your analysis. Submit your Excel analysis and your report document in the Lab 1 dropbox on D2L. This lab assignment is due on Sep. 7, 2020.
+
+***
+
+**NOTE ON DOWNLOADING CSV's FROM GITHUB**
+
+Github is designed to work with Git, a version control language that allows you to pull and push files from and to a remote repository of files. Github also provides the ability to manually download a file with a button on the webpage for that file. For this lab, you only need to download a couple of files, so you don't have to install Git and learn how to use it (although it is a simple and useful thing to know). You just need to know how to download the data files correctly so that you can use Excel to work with them. The two files store data in different formats: ".xlsx" and ".csv". 
+
+The file extension ".xlsx" tells the computer that this is a file specifically for Excel, so it uses that application to open it. On Github, if you click Download on an .xlsx file, it goes directly into your downloads folder and, if you have Excel on your computer, you can immediately open the file and see the data in a spreadsheet. 
+
+The other file extension, ".csv" (Comma Separated Values), is a more generic format for storing data, and is far more common than the .xlsx extension. CSV files can be opened in a variety of applications, including Excel (your computer probably defaults to opening CSV's in Excel). There's an extra step in downloading .csv files from Github. When you click the Download button, it takes you to a page showing the data in its raw, comma-separated format. We need to download this text. 
+
+  * In Windows, you can right-click and "Save As..." and once you save the file with the ".csv" extension, you're ready to open it in Excel. 
+  * On a Mac OS, you can right-click and "Save Page As...". Then make sure the extension in the file name up top in the window that pops up is ".csv" (not ".txt"), and make sure the "Format:" drop-down menu at the bottom of the popup is set to "Page Source" (not "Web Archive"). Then you can save and open your file in Excel. 
