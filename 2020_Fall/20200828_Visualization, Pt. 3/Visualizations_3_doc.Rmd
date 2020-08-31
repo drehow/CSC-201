@@ -1,3 +1,17 @@
+---
+title: "8/26 Script"
+author: "D. Howell"
+date: "8/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Script from 
+
+```{r}
 # loading initial packages I know I'm going to be using
 if (!require(readr)) install.packages('readr')
 if (!require(ggplot2)) install.packages('ggplot2')
@@ -62,10 +76,10 @@ covidData$per100k <- round(covidData$cases / covidData$POPESTIMATE2019 * 10000,2
 
 # getting rid of rows where per100k column is NA 
 covidData <- covidData[!is.na(covidData$per100k),]
+```
 
 
-
-
+```{r}
 # reading in voting data
 votes <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200824_Beginning%20with%20R%20...%20Visualizing%20Data/1976-2016-president.csv')
 
@@ -95,6 +109,8 @@ covidData <- left_join(covidData, votes)
 covidData$population <- covidData$POPESTIMATE2019
 covidData$POPESTIMATE2019 <- NULL
 
+```
+```{r}
 
 # starting to build my final plot
 ggplot(data = covidData) + 
@@ -105,8 +121,8 @@ ggplot(data = covidData) +
 # changing to lines
 ggplot(data = covidData) + 
   geom_line(mapping = aes(x = date, y = per100k
-  )
-  )
+                          )
+            )
 
 ggplot(data = covidData) + 
   geom_line(mapping = aes(x = date, y = per100k
@@ -188,6 +204,8 @@ ggplot(data = covidData) +
   theme_classic() +
   theme(legend.position = c(0.11, 0.67))
 ########################################################################
+```
+```{r}
 
 # extra plots just for exploring the data
 
@@ -198,6 +216,8 @@ covidData_party <- covidData %>%
 ggplot(data = covidData_party) + 
   geom_line(mapping = aes(x = date, y = per100k, group = voted, color = voted))
 
+```
+```{r}
 
 #########################################################################
 # Starting on boxplot vis
@@ -236,7 +256,9 @@ ggplot(covidData_yesterday, aes(voted, per100k)) +
        caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
   theme_classic()
 ###############################################################################
+```
 
+```{r}
 
 # starting concentrations by population
 ggplot() + 
@@ -257,7 +279,7 @@ ggplot() +
 ggplot() + 
   geom_point(data = covidData_yesterday, aes(x = population, y = per100k, size = population),colour = 'black', pch=22) +
   geom_point(data = covidData_yesterday_OK, aes(x = population, y = per100k), color = 'darkred',fill = 'darkred', size = 3, pch=22) 
-
+  
 ggplot() + 
   geom_point(data = covidData_yesterday, aes(x = population, y = per100k, size = population),colour = 'black', pch=22) +
   geom_point(data = covidData_yesterday_OK, aes(x = population, y = per100k), color = 'darkred',fill = 'darkred', size = 3, pch=22) + 
@@ -312,17 +334,23 @@ g <- ggplot() +
          caption="Sources: New York Times, U.S. Census Bureau, Harvard Dataverse") +
     scale_x_continuous(labels = comma) +
     theme_light())
+```
+```{r}
 
 #install.packages('ggExtra')
 if(!require(ggExtra)) install.packages('ggExtra')
 library(ggExtra)
 ggMarginal(g, type = "density", fill="transparent", size = 10)
+```
+```{r}
 ggMarginal(g, type = "boxplot", fill="transparent")
+```
+```{r}
 ggMarginal(g, type = "boxplot", fill="transparent", size = 11)
 
 ################################################################################################
-
-
+```
+```{r, fig.height=10}
 # Start lollipop chart
 covidData$percChange <- NA
 for(i in 1:nrow(covidData)){
@@ -397,3 +425,8 @@ ggplot(covidData_yesterday, aes(x=state, y=percChange)) +
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
 ################################################################################
+
+
+
+```
+
