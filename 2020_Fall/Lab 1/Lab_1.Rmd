@@ -18,7 +18,7 @@ Tulsa and Oklahoma City mandated masks to be worn in public, indoor places on Ju
 
 Some questions I'm wondering about specifically are:
 
-* Are cases Tulsa County (Tulsa) and Oklahoma County (OKC) rising significantly slower than the rest of OK?
+* Are cases in Tulsa County (Tulsa) and Oklahoma County (OKC) rising significantly slower than the rest of OK?
 * How did the rates in Tulsa and OKC compare to the rest of the state before the mask mandate?
 * How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population?
 
