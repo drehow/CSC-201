@@ -20,7 +20,7 @@ Some questions I'm wondering about specifically are:
 
 * Are cases in Tulsa County (Tulsa) and Oklahoma County (OKC) rising significantly slower than the rest of OK?
 * How did the rates in Tulsa and OKC compare to the rest of the state before the mask mandate?
-* How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population?
+* How do the mandated counties compare to the rest of the state in terms of cases as a percentage of county population? 
 
 This lab data needs to be analyzed in Excel and reported in the text editing software of your choice. Find links to the data below:
 
@@ -37,7 +37,7 @@ Github is designed to work with Git, a version control language that allows you 
 
 The file extension ".xlsx" tells the computer that this is a file specifically for Excel, so it uses that application to open it. On Github, if you click Download on an .xlsx file, it goes directly into your downloads folder and, if you have Excel on your computer, you can immediately open the file and see the data in a spreadsheet. 
 
-The other file extension, ".csv" (Comma Separated Values), is a more generic format for storing data. CSV files can be opened in a variety of applications, including Excel. There's an extra step in downloading .csv files from Github. When you click the Download button, it takes you to a page showing the data in its raw, comma-separated format. We need to download this text. 
+The other file extension, ".csv" (Comma Separated Values), is a more generic format for storing data, and is far more common than the .xlsx extension. CSV files can be opened in a variety of applications, including Excel (your computer probably defaults to opening CSV's in Excel). There's an extra step in downloading .csv files from Github. When you click the Download button, it takes you to a page showing the data in its raw, comma-separated format. We need to download this text. 
 
   * In Windows, you can right-click and "Save As..." and once you save the file with the ".csv" extension, you're ready to open it in Excel. 
   * On a Mac OS, you can right-click and "Save Page As...". Then make sure the extension in the file name up top in the window that pops up is ".csv" (not ".txt"), and make sure the "Format:" drop-down menu at the bottom of the popup is set to "Page Source" (not "Web Archive"). Then you can save and open your file in Excel. 
