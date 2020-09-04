@@ -1,0 +1,179 @@
+---
+title: 'DT: arrange(), select(), mutate()'
+author: "D. Howell"
+date: "9/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+On Wednesday, we learned how to select rows based on their values using the filter() function from the dplyr package. Now we look into a few more transformation functions from that package:
+
+  * **select()** - move, drop, and rename columns
+  * **mutate()** - create new columns based on existing column values
+  * **arrange()** - reorder rows based on column values
+
+We're continuing with the colleges data sets that were introduced on Wednesday. Link to the data [here.](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-03-10/readme.md)
+
+Let's begin by reading in the data and loading our packages
+```{r, message=F, warning=F}
+library(readr)
+library(dplyr)
+
+# reading in the tuition cost data from github using the code supplied on the README.md file
+tuition_cost <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-10/tuition_cost.csv')
+# reading in the salary potential data from github using the code supplied on the README.md file
+salary_potential <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-10/salary_potential.csv')
+
+# we haven't covered joins in detail yet - but just know that this code is putting the two data sets together by the school name column. And because it's an inner join (instead of left, right, outer, etc.), it's dropping rows from either data set that do not appear in the other data set. 
+df <- inner_join(tuition_cost, salary_potential)
+
+names(df)
+str(df)
+summary(df)
+```
+
+<br>
+
+***
+
+Our goal for this lesson is to rank the schools in our data set based on early-career value (return-on-investment). ROI is calculated as "how much you earn vs. how much you spend." We can express this as: **[early career earnings] / [cost of tuition + room and board]**
+Our data separates in-state and out-of-state tuition, so let's just go ahead and decide to use out-of-state for the calculation. You can make it more detailed in a later iteration. 
+
+
+### select()
+Some data sets don't have enough variables to derive useful insights. Most of the time, however, this is not the case. Data sets in the "real world" often serve as the base for several different analyses, all with different goals and purposes. The best practice when beginning to work with one of these data sets is to ask yourself what information you want to try to get from the data set, and which of the columns might help you get there. Then you drop all the columns that are irrelevant to your analysis. This is a minor step because most of the time you can get by without dropping columns, but dropping unnecessary variables makes your programs faster and it makes your data set easier to understand (think "succinctness").
+
+So let's look it the summary again and then select the columns we need and/or drop the columns we don't need. 
+```{r}
+summary(df)
+```
+
+It's looking like we need 
+ * name
+ * out of state tuition
+ * early career pay
+
+The select() function takes arguments in exactly the same way as dplyr::filter(). I'm going to use the pipe format because that's my preference. 
+
+Note that we want to preserve our original data by not overwriting that object. So we need to name this derivative data set something different, say, df2.
+
+```{r}
+# selection by defining what you want to keep
+df2 <- df %>%
+        select(name, out_of_state_tuition, early_career_pay)
+summary(df2)
+
+# selection by defining what you want to get rid of. 
+df2a <- df %>% 
+          select(-(state:in_state_total), -(out_of_state_total:state_name), -(mid_career_pay:stem_percent))
+summary(df2a)
+
+
+```
+
+
+Perfect. 
+
+***
+
+### mutate()
+Deriving calculated fields is in the DNA of data analysis. As an analyst, you do it so much that you begin to not even view it as a task after a while. It quickly becomes second nature. There are several ways to derive a new column, but it's simplest to stick with the dplyr package, which means using mutate()
+
+mutate() works either in the pipe format (where you define the data you're working with before the mutate() function and connect it with a pipe, %>%) or as a stand-alone function (where your first argument within the mutate() function is your data set). Using the pipe format
+
+We want to make an "ROI" column so that we can use it to rank the schools in our data set. We defined the calculation earlier, so let's get straight to it. 
+
+```{r}
+
+df3 <- df2 %>%
+        mutate(
+          roi = round((df2$early_career_pay / df2$out_of_state_tuition - 1) * 100,2)
+        )
+
+summary(df3)
+
+```
+
+***
+
+### arrange()
+Reordering the rows of a data set can come in handy often. Namely, the best use of this function for me has been in odering the way observations show up in visualizations. But here, we first want to use it to order the schools from best to worse ROI so that we can add another column for rankings. 
+
+arrange is just like the other dplyr functions we've looked at, but it's important to note that the default sorting method is always least to greatest (and A to Z). You can easily change that, and we will need to do it here to get greatest to least.
+
+```{r, message=F, warning=F}
+
+df4 <- df3 %>%
+        arrange(roi)
+
+head(df4)
+
+```
+
+Looks like it ordered from least to greatest. Enter the desc() function to change it. 
+
+```{r}
+df4 <- df3 %>%
+        arrange(
+          desc(roi)
+        )
+
+head(df4)
+```
+
+That's more like it! 
+
+Now the data looks like we want it to. We just need to add a rank column, which is super easy. 
+
+```{r}
+df5 <- df4 %>%
+        mutate(rank = 1:nrow(df4))
+```
+
+Let's find ORU...
+```{r}
+df5 %>% filter(name == 'Oral Roberts University')
+```
+
+Let's get the rankings of some schools in percentiles. 
+```{r}
+
+# Let's get the percentiles (the higher the better)
+round((1-df5$rank[df5$name=='Oral Roberts University']/nrow(df5))*100)
+round((1-df5$rank[df5$name=='University of Tulsa']/nrow(df5))*100)
+round((1-df5$rank[df5$name=='Yale University']/nrow(df5))*100)
+round((1-df5$rank[df5$name=='University of Central Oklahoma']/nrow(df5))*100)
+```
+
+Further exploring, let's crank out some graphs. 
+```{r}
+library(ggplot2)
+
+ggplot(df5) + 
+  geom_line(aes(x = rank, y=roi))
+
+
+ggplot(df5) +
+  geom_point(aes(x = rank, y = out_of_state_tuition), color = 'red') 
+
+
+ggplot(df5) + 
+  geom_point(aes(x = rank, y = early_career_pay), color = 'blue')
+
+```
+
+This is pretty interesting... To me, it implies that early career pay is totally independent of the cost of the school. So if ROI of an undergraduate program is your main criteria, you would do well to choose a cheaper school than a more expensive one.
+
+This analysis does come with several caveats, and it's important for you, as the analyst, to point them out so that people don't misinterpret your analysis. Some of the disclaimers of this analysis so far would include:
+
+  * This is out of state tuition and early career pay. I'm sure the results would be different if we chose instead to try to find lifetime earnings data about these schools. 
+  * This does not factor in average scholarships given by the schools, which would probably greatly impact ROI. 
+  * You might have an added constraint that you want to weed out any schools where the early career salary is less than a set amount. A program could cost $10 and the starting salary could be 12,000 which would be an incredible ROI, but that would still put you below the poverty line. 
+
+
+
+
