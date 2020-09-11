@@ -258,7 +258,7 @@ The process of finding/diagnosing the errors in your code and solving them is ca
 When a program that I wrote inevitably crashes, I usually take the following steps:
 
 * The first thing I do is start from the top of the program and execute one line at a time until I get to the line that causes the error. 
-* Check the line for syntax mistakes like missing parenthesis 
+* Check the line for syntax mistakes like a missing parenthesis 
 * If that all looks correct, then I talk myself through what I want the command to do
 * If no luck after that, google it. :)
 
