@@ -138,7 +138,7 @@ try(
 You just need to install the package first, and then try to load it. 
 
 ### Indexing Errors
-Indexing erros happen when you call a row or column of a data frame that the data frame doesn't have.
+Indexing errors happen when you call a row or column of a data frame that the data frame doesn't have.
 
 ```{r message=F, warning=F}
 # how many rows does mtcars have?
