@@ -1,0 +1,107 @@
+---
+title: "EDA - Variation"
+author: "D. Howell"
+date: "9/14/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## EDA
+
+* Generate questions about your data.
+* Search for answers by visualising, transforming, and modelling your data.
+* Use what you learn to refine your questions and/or generate new questions.
+
+## Beginning Questions
+
+There is no universally optimal way to begin exploring your data, but in general, some basic questions that will spawn a host of new questions when answered are:
+
+* What kind of variance is there within my variables?
+* What kind of covariance is there between my variables?
+
+## Visualizing Variance 
+
+```{r, warning=F, message=F}
+library(nycflights13)
+library(dplyr)
+library(ggplot2)
+
+# create a copy of flights called df
+df <- flights
+
+# this data set has so many observations that it would take a long time to plot, so I narrow it down by finding the top 5 destinations and only keeping the observations with one of those 5 as the destination
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+# the PDF can be visualized with geom_freqpoly
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly() 
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) 
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) + 
+  coord_cartesian(xlim = c(-50, 200))
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) + 
+  coord_cartesian(xlim = c(-25, 100))
+
+ggplot(df_top5) + 
+  geom_histogram(aes(df_top5$dep_delay))
+
+ggplot(df_top5) + 
+  geom_histogram(aes(df_top5$dep_delay), binwidth=1)
+
+
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+geom_histogram( binwidth=1)+ 
+  coord_cartesian(xlim = c(-25, 100))
+
+# what would happen if you just plotted a line of the variable instead of ordering and binning it first?
+ggplot(df_top5,aes(x=1:nrow(df_top5) ,y=df_top5$dep_delay)) + 
+  geom_line() 
+
+ggplot(df_top5,aes(x=1:nrow(df_top5) ,y=df_top5$dep_delay)) + 
+  geom_point() 
+
+```
+
+##
+Another way to visualize a distribution is with a box plot
+
+```{r, warning=F, message=F}
+ggplot(df_top5,aes(y=df_top5$dep_delay)) + 
+  geom_boxplot( ) + 
+  coord_cartesian(ylim = c(-25, 50)) 
+
+df_top5_filtered <- df_top5[df_top5$dep_delay<50,]
+ggplot(df_top5_filtered,aes(df_top5_filtered$dep_delay)) + 
+geom_histogram(binwidth=1)+ 
+  coord_flip()
+```
+
+##
+Visualizing the variance in a categorical variable is done with bar charts, where the y-axis represents the counts of each category within the variable. 
+
+```{r, warning=F, message=F}
+ggplot(df_top5) +  
+  geom_bar(aes(x=dest))
+
+```
+
+
+## Getting the variance of other variables in flights data set
+
