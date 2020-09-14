@@ -1,0 +1,112 @@
+---
+title: "EDA - Variation"
+author: "D. Howell"
+date: "9/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+To this point in the class, you've been learning how to use data tools to work with data. We'll get back to learning new things in R later when we talk about wrangling, but for now, we pivot to using those tools towards the goal of understanding your data. This happens via the process of Exploratory Data Analysis (EDA). Explicitly, EDA is when you:
+
+* Generate questions about your data.
+* Search for answers by visualising, transforming, and modelling your data.
+* Use what you learn to refine your questions and/or generate new questions.
+
+EDA can look vastly different for a single analyst on different data sets, and it can look different between different analysts on a single data set. There is no universally correct way to perform EDA, but there is a clear difference between good and bad EDA. A good way to judge whether you're performing good EDA is if, as a result of your analysis, you understand your data well enough to answer whatever questions someone may ask about its contents. Therefore, the most intuitive way to perform EDA is to generate your own questions, answer them, and then keep doing that until you can't think of anymore questions to ask. 
+
+As you are generating and answering questions about your data, you may find that the answers are dead ends. For example, the answer to the question "Are these two variables influenced by each other?" might end up being "Not at all", but that answer still offers some insight. However, in most data sets, there are at least some weak insights to be discovered, and the key to uncovering those insights is to generate as many questions as possible. And when you do uncover patterns and correlation, the next question you might ask should be "Why is that?". 
+
+In class this week, we will be introduced to some of the main tools you can use in EDA and then we will spend some time exploring some different data sets. 
+
+***
+
+There is no universally optimal way to begin exploring your data, but in general, some basic questions that will spawn a host of new questions when answered are:
+
+* What kind of variance is there within my variables?
+* What kind of covariance is there between my variables?
+
+### Visualizing Variance 
+Variance is simply the quantification of how measurements change within a variable. Variance  If you recorded the height of every adult in America, You'd have about 330 million measurements, and none of them would be exactly the same because height is a continuous variable. If you recorded the religious affiliation of each American adult, you'd get 330 million measurements of about 50 possible values because religious affiliation is a discrete (categorical) measurement. But either way, it would be next to impossible to wrap your head around the contents of either of those variables without a visualization of them. 
+
+Let's start with continuous variables. These can be plotted as a probability density function (PDF). A PDF reduces all the observations in your data set down to one line, which is much easier for a human to interpret. On a PDF, the chance that a measurement in the variable falls within a certain range on the x-axis is the same as the area under the curve for that range. The area under the PDF curve is always one. So, the total area under the PDF line for a range of x is the percentage of values in the variable that fall within that range of x. This is shown below for the nycflights13 data set. 
+```{r, warning=F, message=F}
+library(nycflights13)
+library(dplyr)
+library(ggplot2)
+
+# create a copy of flights called df
+df <- flights
+
+# this data set has so many observations that it would take a long time to plot, so I narrow it down by finding the top 5 destinations and only keeping the observations with one of those 5 as the destination
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+# the PDF can be visualized with geom_freqpoly
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly() 
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) 
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) + 
+  coord_cartesian(xlim = c(-50, 200))
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+  geom_freqpoly( binwidth = 1) + 
+  coord_cartesian(xlim = c(-25, 100))
+
+ggplot(df_top5) + 
+  geom_histogram(aes(df_top5$dep_delay))
+
+ggplot(df_top5) + 
+  geom_histogram(aes(df_top5$dep_delay), binwidth=1)
+
+
+
+ggplot(df_top5,aes(df_top5$dep_delay)) + 
+geom_histogram( binwidth=1)+ 
+  coord_cartesian(xlim = c(-25, 100))
+
+# what would happen if you just plotted a line of the variable instead of ordering and binning it first?
+ggplot(df_top5,aes(x=1:nrow(df_top5) ,y=df_top5$dep_delay)) + 
+  geom_line() 
+
+ggplot(df_top5,aes(x=1:nrow(df_top5) ,y=df_top5$dep_delay)) + 
+  geom_point() 
+
+```
+
+Another way to visualize a distribution is with a box plot
+
+```{r, warning=F, message=F}
+ggplot(df_top5,aes(y=df_top5$dep_delay)) + 
+  geom_boxplot( ) + 
+  coord_cartesian(ylim = c(-25, 50)) 
+
+df_top5_filtered <- df_top5[df_top5$dep_delay<50,]
+ggplot(df_top5_filtered,aes(df_top5_filtered$dep_delay)) + 
+geom_histogram(binwidth=1)+ 
+  coord_flip()
+```
+
+Visualizing the variance in a categorical variable is done with bar charts, where the y-axis represents the counts of each category within the variable. 
+
+```{r, warning=F, message=F}
+ggplot(df_top5) +  
+  geom_bar(aes(x=dest))
+
+```
+
+
+
+
