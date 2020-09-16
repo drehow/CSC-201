@@ -1,0 +1,185 @@
+---
+title: "EDA - Covariation"
+author: "D. Howell"
+date: "9/14/2020"
+output: html_document
+---
+
+In the last class we started talking about variation and visualizing the distribution of values within a single variable. To recap for just a second:
+
+* we established some ways to plot a probability density function for continuous variables.
+  + A PDF is a line where the x axis is the range values in your variable, and the y axis represents it's level of frequency in the variable. In other words, the point on the x axis where the line reaches its peak is the value that occurs the most in your variable, and the lowest parts of the line are the values that occur the least. 
+  + PDF's can be plotted in R using geom_freqpoly or geom_histogram (see the notes from the Variation lecture for some code examples). 
+* We also talked about how to visualize variance in a categorical variable.
+  + Really the only way to do this is with a bar plot, or some other visualization where one axis lists each of the possible categories of the column, and the other axis is the number of times that category occurs in the variable.
+  
+***
+
+Now, to quote directly from the book:
+
+> If variation describes the behavior within a variable, covariation describes the behavior between variables. Covariation is the tendency for the values of two or more variables to vary together in a related way.
+
+Covariation is important to know about within your data, because 
+
+* It gives you a deeper level of understanding, beyond just the individual behaviours of single variables
+* If there is covariance between two of your variables, that has implications to the type of model you would choose for your analysis (if you are intending to model)
+
+Plotting covariation means that instead of visualizing the frequency of each value within the column/variable, visualizing covariation plots two variables against each other. But... what does covariance between two variables look like? And what do you do when the two variables are different types?
+
+These questions necessitate different solutions per different case:
+
+* Exploring covariance between a categorical variable and a continuous variable
+* Between two categorical variables
+* And between two continuous variables
+
+### Categorical vs. Continuous
+Let's take the flights data set that we looked at in the previous class. We start by copying the code from that class to recreate the top 5 destinations data set. Last time we visualized the the overall distribution of air times and found something weird looking. Plotted again here:
+```{r, warning=FALSE , message=F}
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+
+df <- flights
+
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+str(df_top5)
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+```
+
+Maybe if we visualize the covariance between the flight times to different destinations, that will give us some insight. When trying to visualize covariance between a continuous and a categorical variable, you have multiple otions, but the best one is to use the frequency polygon `geom_freqpoly()` and tell it to split the continuous distributions up by the categories of your discrete variable (usually this is done by setting the `color` argument to the discrete variable, and R plots different colors of lines per category).
+```{r, warning=FALSE , message=F}
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$dest), binwidth=1)
+```
+
+Definitely helped! Now we realize that all the humps in the first distribution represented different destinations. 
+
+Keep in mind that we are visualizing the distribution of flights **to** these airports. What do the corresponding graphs for the **from** airports look like? Let's copy and paste the above code and just change it for the origin column instead of dest. 
+
+In R, you can type `Ctrl/Command + F` to pull up the find/replace tool. Once you paste your code, just put `dest` in the find box and `origin` in the replace box and it will be easy to change the code that way. 
+```{r, warning=FALSE , message=F}
+df <- flights
+
+top5_origin <- head(
+  df %>%
+    group_by(origin) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$origin %in% top5_origin$origin,]
+
+str(df_top5)
+```
+So, we notice something strange here, too. Why does the new `df_top5` not drop any rows from the original data set? They have the same number! It's as if R is telling us that either we made a mistake, or the top 5 origins make up the whole data set. We can use the `unique()` function to figure out which three airports are in the origin column.
+
+```{r, warning=FALSE , message=F}
+unique(df_top5$origin)
+```
+There are only three origins! I guess the name `df_top5` is deceptive now. Oh well, we already pasted our code and it will work no matter what the name of the object is (as long as the name is consistent). Before we finish this analysis, it would be a good idea to go back and change the name of the object to `df_top3`, just so it isn't confusing if/when someone else wants to read through your code, or if you need to come back to your code and you've forgotten why there aren't 5 origins in the so called "top 5". 
+
+I happen to know that LGA stands for Laguardia and JFK stands for John F. Kennedy, both of which are airports in New York City. A quick Google search tells me that EWR is the code for the Newark airport, which is also in NYC... Hold on a second... This data set appears to only show flights from the three major NYC airports. Now the package name `nycflights13` that this data set comes from makes more sense: it's flights from NYC in the year 2013!
+
+So when we visualized the top 5`dest` distributions above, the reason the peaks were so distinct is that they all had similar starting points. And maybe we can presume that ORD and ATL are roughly the same distance from NYC because those two peaks where almost indistinguishable. Let's Google it. 
+
+![](/Users/drewhowell/Desktop/CSC-201/2020_Fall/20200916_Covariation/NYC_to_Chi.png)
+![](/Users/drewhowell/Desktop/CSC-201/2020_Fall/20200916_Covariation/NYC_to_Atl.png)
+
+Nice! It's weird that the flight times are different on Google, but that isn't reflected in our data, and it doesn't make sense given that the distances are almost the same. 
+
+Anyway, let's back out of that rabbit hole and visualize our distributions for the origin column. Now that we know all the origins are in the same geographical location and the destinations are not, we may expect there to be less distinction between these distributions, unless perhaps, the three airports tend to fly mostly to different locations than the other three...
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+```
+
+There are still some distinct peaks in this distribution, which might be because, as we discovered earlier when we drilled down to the top 5 destinations, 80,000 out 330,000 (almost 1/4) of the observations are in the top 5 list. 
+
+Let's plot the covariance to see if there is any distinction among the three origins. 
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$origin), binwidth=1)
+
+```
+
+Maybe... it's sort of hard to tell. JFK sort of seems to be doing its own thing. Let's facet these plots so that they appear next to each other, but separated. 
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$origin), binwidth=1) + 
+  facet_grid(rows = vars(df_top5$origin))
+
+```
+
+Does Laguardia not have a direct flight to LAX? We can be pretty sure from the distributions we've already seen, that the big hump around 325 minutes of airtime is flights from NYC to LA, and LGA appears to be totally flat...
+
+I googled around this phenomenon to try to find an answer. See [this article from CNN in 2015.](https://money.cnn.com/2015/02/26/news/companies/laguardia-flights/index.html)
+
+A couple quotes from the article: 
+
+* "LaGuardia has had a 1,500-mile restriction on most flights to and from the airport for more than 30 years. For travelers going to the West Coast, Las Vegas or Phoenix, that meant you have to fly through John F. Kennedy or Newark Liberty airports."
+* "The rule came about because the Port Authority wanted to encourage airlines to fly in and out of JFK and Newark airports at a time when LaGuardia was already at capacity."
+
+So much information from just one type of plot! Let's get into the other two scenarios for plotting covariance. 
+
+### Two Continuous Variables
+You have several options when you are plotting two continuous variables, but the best place to start is usually with a basic scatter plot. Let's visualize the covariation between air_time and distance. It's reasonable to think that these two variables would be related - unless for some reason commercial jets have a wide range of cruising speeds or something.
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance))
+
+```
+
+This plot begins to confirm our suspicion that the two variables are related. However, we do have 330,000 points here, and they definitely seem to be getting overplotted. Let's add the alpha argument to try to make it easier to see. 
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance), alpha = 1/250)
+
+```
+
+A common pairing to a plot like this is the `geom_smooth()` layer that you all have seen already. It adds a trendline to the graph that runs through the middle of all the points. 
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance), alpha = 1/250) + 
+  geom_smooth(aes(x=df$air_time, y=df$distance))
+
+```
+
+It's worth explicitly laying out how we know that there is covariation by looking at this graph. These two variables show a high level of covariance because the scatter points stick closely around the trendline. In other words, we can be confident from this data that, whenever one of these variables increases or decreases, the other will likely do the same. 
+
+Another cool plot is the `geom_hex()` layer. It's similar to a scatter plot, but it does a better job of showing different densities of points in a certain area. It is not a function of ggplot2 though, so you need to install the `hexbin` package first and load it into the R session. 
+
+```{r, warning=FALSE , message=F}
+#install.packages('hexbin')
+library(hexbin)
+
+ggplot(df) + 
+  geom_hex(aes(x=df$air_time, y=df$distance))  
+
+```
+
+Two variables can have a lot of covariance in the opposite direction, too. In other words, covariance can also look like one variable consistently going down at the same rate as the other goes up. 
+
+### Two Categorical Variables
+As you've seen before, plotting only categorical variables limits your visualizations to counts of each category. This is true when there are two categorical variables in the plot, too, although there are a couple different tools you can use that are laid out in the book. 
+

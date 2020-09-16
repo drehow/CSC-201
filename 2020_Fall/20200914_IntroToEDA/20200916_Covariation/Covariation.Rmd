@@ -1,0 +1,101 @@
+---
+title: "EDA - Covariation"
+author: "D. Howell"
+date: "9/14/2020"
+output: html_document
+---
+
+In the last class we started talking about variation and visualizing the distribution of values within a single variable. To recap for just a second:
+
+* we established some ways to plot a probability density function for continuous variables.
+  + A PDF is a line where the x axis is the range values in your variable, and the y axis represents it's level of frequency in the variable. In other words, the point on the x axis where the line reaches its peak is the value that occurs the most in your variable, and the lowest parts of the line are the values that occur the least. 
+  + PDF's can be plotted in R using geom_freqpoly or geom_histogram (see the notes from the Variation lecture for some code examples). 
+* We also talked about how to visualize variance in a categorical variable.
+  + Really the only way to do this is with a bar plot, or some other visualization where one axis lists each of the possible categories of the column, and the other axis is the number of times that category occurs in the variable.
+  
+***
+
+Now, to quote directly from the book:
+
+> If variation describes the behavior within a variable, covariation describes the behavior between variables. Covariation is the tendency for the values of two or more variables to vary together in a related way.
+
+Covariation is important to know about within your data, because 
+
+* It gives you a deeper level of understanding, beyond just the individual behaviours of single variables
+* If there is covariance between two of your variables, that has implications to the type of model you would choose for your analysis (if you are intending to model)
+
+Plotting covariation means that instead of visualizing the frequency of each value within the column/variable, visualizing covariation plots two variables against each other. But... what does covariance between two variables look like? And what do you do when the two variables are different types?
+
+These questions necessitate different solutions per different case:
+
+* Exploring covariance between a categorical variable and a continuous variable
+* Between two categorical variables
+* And between two continuous variables
+
+### Categorical vs. Continuous
+Let's take the flights data set that we looked at in the previous class. We start by copying the code from that class to recreate the top 5 destinations data set. Last time we visualized the the overall distribution of air times and found something weird looking. Plotted again here:
+```{r, warnings=F, message=F}
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+
+df <- flights
+
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+```
+
+Maybe if we visualize the covariance between the flight times to different destinations, that will give us some insight. 
+```{r, warnings=F, message=T}
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$dest), binwidth=1)
+```
+
+Definitely helped! Now we realize that all the humps in the first distribution represented different destinations. 
+
+Keep in mind that we are visualizing the distribution of flights **to** these airports. What do the corresponding graphs for the **from** airports look like? Let's copy and paste the above code and just change it for the origin column instead of dest. 
+
+In R, you can type `Ctrl/Command + F` to pull the find/replace tool. Once you paste your code, just put `dest` in the find box and `origin` in the replace box and it will be easy to change the code that way. 
+```{r, warnings=F, message=T}
+df <- flights
+
+top5_origin <- head(
+  df %>%
+    group_by(origin) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$origin %in% top5_origin$origin,]
+```
+So, we notice something strange here, too. Why does the new `df_top5` only have 3 rows? We can use the `unique()` function to figure out which three airports are in the origin column. 
+
+```{r, warnings=F, message=T}
+unique(df_top5$origin)
+```
+I happen to know that LGA stands for Laguardia and JFK stands for John F. Kennedy, both of which are airports in New York City. A quick Google search tells me that EWR 
+
+```{r, warnings=F, message=T}
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+
+ggplot(df_top3,aes(df_top3$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+
+ggplot(df_top3) + 
+  geom_freqpoly(aes(x=df_top3$air_time,color = df_top3$origin), binwidth=1)
+
+```
+
+
+
