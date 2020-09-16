@@ -1,0 +1,163 @@
+---
+title: "EDA - Covariation"
+author: "D. Howell"
+date: "9/14/2020"
+output: slidy_presentation
+---
+
+```{r, include = F}
+library(here)
+# set_here('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20200916_Covariation')
+setwd(here())
+```
+
+##
+
+> If variation describes the behavior within a variable, covariation describes the behavior between variables. Covariation is the tendency for the values of two or more variables to vary together in a related way.
+
+
+## Categorical vs. Continuous
+
+```{r, warning=FALSE , message=F}
+library(nycflights13)
+library(ggplot2)
+library(dplyr)
+
+df <- flights
+
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+str(df_top5)
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+```
+
+```{r, warning=FALSE , message=F}
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$dest), binwidth=1)
+```
+
+```{r, warning=FALSE , message=F}
+df <- flights
+
+top5_origin <- head(
+  df %>%
+    group_by(origin) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$origin %in% top5_origin$origin,]
+
+str(df_top5)
+```
+
+```{r, warning=FALSE , message=F}
+unique(df_top5$origin)
+```
+
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5,aes(df_top5$air_time)) + 
+  geom_freqpoly( binwidth = 1) 
+```
+
+
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$origin), binwidth=1)
+
+```
+
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df_top5) + 
+  geom_freqpoly(aes(x=df_top5$air_time,color = df_top5$origin), binwidth=1) + 
+  facet_grid(rows = vars(df_top5$origin))
+
+```
+
+[Link from article](https://money.cnn.com/2015/02/26/news/companies/laguardia-flights/index.html)
+
+A couple quotes from the article: 
+
+* "LaGuardia has had a 1,500-mile restriction on most flights to and from the airport for more than 30 years. For travelers going to the West Coast, Las Vegas or Phoenix, that meant you have to fly through John F. Kennedy or Newark Liberty airports."
+* "The rule came about because the Port Authority wanted to encourage airlines to fly in and out of JFK and Newark airports at a time when LaGuardia was already at capacity."
+
+## Two Continuous Variables
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance))
+
+```
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance), alpha = 1/250)
+
+```
+
+```{r, warning=FALSE , message=F}
+
+ggplot(df) + 
+  geom_point(aes(x=df$air_time, y=df$distance), alpha = 1/250) + 
+  geom_smooth(aes(x=df$air_time, y=df$distance))
+
+```
+
+```{r, warning=FALSE , message=F}
+#install.packages('hexbin')
+library(hexbin)
+
+ggplot(df) + 
+  geom_hex(aes(x=df$air_time, y=df$distance))  
+
+```
+
+
+## Two Categorical Variables
+```{r, warning=FALSE , message=F}
+# we need to run this code chunk again to make df_top5 the destinations dataset again. 
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+ggplot(df_top5) + 
+  geom_count(aes(x=df_top5$origin, y=df_top5$dest))  
+
+```
+```{r, warning=FALSE , message=F}
+ggplot(df_top5) + 
+  geom_tile(aes(x=df_top5$origin, y=df_top5$dest)) 
+
+```
+```{r, warning=FALSE , message=F}
+df_top5 %>% 
+  count(dest, origin) %>%  
+  ggplot(mapping = aes(x = origin, y = dest)) +
+    geom_tile(mapping = aes(fill = n))
+
+```
+
+
+
+

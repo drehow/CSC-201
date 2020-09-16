@@ -5,6 +5,12 @@ date: "9/14/2020"
 output: html_document
 ---
 
+```{r, include = F}
+library(here)
+# set_here('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20200916_Covariation')
+setwd(here())
+```
+
 In the last class we started talking about variation and visualizing the distribution of values within a single variable. To recap for just a second:
 
 * we established some ways to plot a probability density function for continuous variables.
@@ -92,8 +98,8 @@ I happen to know that LGA stands for Laguardia and JFK stands for John F. Kenned
 
 So when we visualized the top 5`dest` distributions above, the reason the peaks were so distinct is that they all had similar starting points. And maybe we can presume that ORD and ATL are roughly the same distance from NYC because those two peaks where almost indistinguishable. Let's Google it. 
 
-![](/Users/drewhowell/Desktop/CSC-201/2020_Fall/20200916_Covariation/NYC_to_Chi.png)
-![](/Users/drewhowell/Desktop/CSC-201/2020_Fall/20200916_Covariation/NYC_to_Atl.png)
+![](NYC_to_Chi.png)
+![](NYC_to_Atl.png)
 
 Nice! It's weird that the flight times are different on Google, but that isn't reflected in our data, and it doesn't make sense given that the distances are almost the same. 
 
@@ -181,5 +187,52 @@ ggplot(df) +
 Two variables can have a lot of covariance in the opposite direction, too. In other words, covariance can also look like one variable consistently going down at the same rate as the other goes up. 
 
 ### Two Categorical Variables
-As you've seen before, plotting only categorical variables limits your visualizations to counts of each category. This is true when there are two categorical variables in the plot, too, although there are a couple different tools you can use that are laid out in the book. 
+As you've seen before, plotting only categorical variables limits your visualizations to counts of each category. This is true when there are two categorical variables in the plot, too. Instead of having one axis for the categories and another for the counts, you have to use both axes for the variables and figure out a way to use the points to represent the count of times the two categories from different variables occur on a single row. There are a couple different tools you can use that are laid out in the book. 
+
+* You can use a scatter plot again, and size the dots based on the count of times the categories interact. `ggplot2` has a geom function made for this, called `geom_count()`. Let's see what the top 5 destinations subset looks like in relation to the origins. 
+```{r, warning=FALSE , message=F}
+# we need to run this code chunk again to make df_top5 the destinations dataset again. 
+top5_dest <- head(
+  df %>%
+    group_by(dest) %>%
+    summarise(count = n()) %>%
+    arrange(desc(count))  
+  ,5
+)
+df_top5 <- df[df$dest %in% top5_dest$dest,]
+
+ggplot(df_top5) + 
+  geom_count(aes(x=df_top5$origin, y=df_top5$dest))  
+
+```
+
+
+Sometimes these plots aren't great because it's difficult to distinguish the slight differences in the size of the dots, but this one works pretty well. This plot provides some extra confirmation directly from our data that there are no flights from LGA to LAX. I'm also interested in the symmetry of this plot. LGA and JFK are direct complements of each other, while EWR is sending roughly the same number of flights to each of the top 5 destinations. 
+
+The symmetry makes sense to me after reading the article linked above. It says that the NY Port Authority owns and controls all three airports, so they don't have to compete with each other. Rather, they can designate different airports to serve different purposes. This plot makes me think that the symmetry is by design. Perhaps it would be less efficient for all the airports to send flights to each destination equally. 
+
+Another geom function that serves the same purpose, but is a little easier to view (in my opinion) is `geom_tile()`.
+```{r, warning=FALSE , message=F}
+ggplot(df_top5) + 
+  geom_tile(aes(x=df_top5$origin, y=df_top5$dest)) 
+
+```
+
+
+Looks like this function doesn't count results automatically like `geom_count()` does. We need to transform the data before we can use this function effectively. 
+```{r, warning=FALSE , message=F}
+df_top5 %>% 
+  count(dest, origin) %>%  
+  ggplot(mapping = aes(x = origin, y = dest)) +
+    geom_tile(mapping = aes(fill = n))
+
+```
+
+
+I think this function gives a little more nuance. It's easier for humans to distinguish slight differences in color than differences of size. I would rather use this one if I were giving a presentation, although it is slightly more work to create. 
+
+### Conclusions
+Visualizing covariance is a necessary step towards understanding your data on a deeper level. You should definitely understand the variance within your variables first, but variance within variables alone does not give us any insight into the patterns and trends within your data. 
+
+
 
