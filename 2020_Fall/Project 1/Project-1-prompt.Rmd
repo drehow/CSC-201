@@ -1,0 +1,48 @@
+---
+title: "Project 1"
+author: "D. Howell"
+date: "9/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Intro
+So far, this class has been about exploring data. We've talked in detail about the concept of Exploratory Data Analysis and the R packages, functions, and syntax necessary to perform it. In Lab 1, we used Excel to transform and visualize data to draw our own conclusion about the current effectiveness of mask mandates in Oklahoma. In Lab 2, we used R (packages `dplyr` and `ggplot2`) to transform and visualize data to explore the history of Tour de France champions. The shared characteristics of those labs doesn't end with the fact that they were both examples of EDA - they were both directed by the prompts. 
+
+In this project, you'll perform a similar process to the two labs, but you're the director this time. It's your job to explore the data you choose and to report the insight you are able to derive. This makes the project notably more difficult and/or work intensive than the labs, which is why it's worth 25% of your grade instead of 10% like the labs. Let's get into the details. 
+
+### Prompt
+Here are the specific steps for the project:
+
+1. Look through the data sets available in the Tidy Tuesday repository and choose one that is interesting to you.
+    + Multiple people can use the same data set. **This is not a group project**, but multiple independent projects may be performed on the same data set. 
+    + Take care to pick a data set that you think could yield some interesting insights and visualizations. Specifically, try to steer clear of data sets that only have categorical variables, as your visualization options with those are limited. You may still choose such a data set, but it might be more difficult to explore and gain insight. 
+    + There are no limits to the size of the data set that you can choose - what matters is that you explore it adequately. However, make sure you have enough data to work with. Sometimes there just isn't enough data to derive any insights, so it's less risky to go with a larger data set. 
+2. Write an R script that explores your data.
+    + The script will be an aid to your report (detailed below). It needs to run from top to bottom with no errors, and perform the following actions;
+        + Read in your data (this code is usually supplied in the TidyTuesday readme file for each data set on Github)
+        + Transform your data and generate visualizations that correspond to the ones that you use in your report.
+    + Make sure to put comments above each section of code that tells me (the reader) what you are doing with the code that follows.
+3. Write a report that details your analysis. 
+    + Generally speaking, a good template to stick to for a technical analysis paper is as follows:
+        + **Introduction** - Give the reader some context for your analysis. If you are analyzing production volumes of different car manufacturers over the years, you might start with a few sentences about how car manufacturers affect society at large and how society is affecting by differing rates of production. After that, you give a short synopsis of your analysis. To stick with the car example, you may say "This analysis of production rates from 1988-2002 with publicly available data from the US Dept. of Commerce reveals several interesting correlations between production rates and economic factors, and may suggest that production volumes are negatively impacted by relatively high unemployment rates."
+        + **Data and Sources** - describe the data you started working with. What it's about, what kind of descriptive columns, how big it is, where it's from, how/when it was collected
+        + **Methodology / Analysis** - describe your EDA process. I would expect to see several visualizations and descriptions of the transformations necessary to achieve the visualizations. **You don't have to include your code in this part**, just describe in plain English what the program does and why. This will likely be the longest section of your report. 
+        + **Conclusions** - You use all the exploratory visualizations shown in the previous section to draw and support your conclusions about the patterns, trends, and general insights from the data. 
+        
+### Deliverables
+You'll need to submit the following files on D2L, either as multiple attachments on the submission or in a single zip file:
+
+- Your data files (unless you are reading the data in from a URL)
+- Your R script
+- Your report
+
+Keep in mind that I am going to run your analysis on my computer, so I'll need everything necessary to do that (i.e., don't forget to submit your source data or a link to it). 
+
+**This project is due by October 23, 2020.** I would encourage you to send me the data set you intend to work with before you get started, so that I can make suggestions if needed and possibly save you some time. 
+
+
+

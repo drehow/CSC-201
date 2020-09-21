@@ -1,0 +1,31 @@
+---
+title: "Importing Data"
+author: "D. Howell"
+date: "9/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+For the beginning R Programmer, few things can be as frustrating as an unsuccessful attempt to import data. It's frustrating because it's simple: I have the file of data I want to analyze, all I have to do to open it in Excel is double-click the file, but why is it so difficult to get into an R session?
+
+R can do so many useful things that it requires the user to know more specifically what they want to do with their data. It makes fewer assumptions than Excel does, as we'll see later in this lesson, which translates to less user-friendliness and a steeper learning curve, but exponentially widens the possible outputs and customizability of your analysis and visualizations. 
+
+In other words, the relative difficulty of reading data into R requires you to invest time learning it up front, but once you have some practice under your belt, it does not get in your way anymore. 
+
+***
+
+### File Extensions (data storage formats)
+File extensions are essentially a code at the end of a file name that let's the computer know what format the contents of the file are in, as well as what application to use to open the file. All files are the same on a base level. If you open any file to see the raw contents, you'll see a formatted blob of letters and numbers. Many of these file types, such as image, audio, and video formats, when opened in this way are complete nonsense. Others ....
+
+### File Paths
+
+
+### Import Functions
+
+
+### Data Frames and Tibbles
