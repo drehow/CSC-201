@@ -20,9 +20,12 @@ In other words, the relative difficulty of reading data into R requires you to i
 ***
 
 ### File Extensions (data storage formats)
-File extensions are essentially a code at the end of a file name that let's the computer know what format the contents of the file are in, as well as what application to use to open the file. All files are the same on a base level. If you open any file to see the raw contents, you'll see a formatted blob of letters and numbers. Many of these file types, such as image, audio, and video formats, when opened in this way are complete nonsense. Others ....
+File extensions are essentially a code at the end of a file name that let's the computer know what format the contents of the file are in, as well as what application to use to open the file. All files are the same on a base level. If you open any file to see the raw contents, you'll see a formatted blob of letters and numbers. Many of these file types, such as image, audio, and video formats, when opened in this way are complete nonsense. Others, when opened to the raw content, like csv and tsv, make more sense. Sometimes you will encounter data files with strange extensions or none at all. In this scenario, it's useful to view the raw content of the file and determine if it can be imported as a csv or something similar. 
+
+(show photos of different raw file content types and one with extension .data but is actually a csv)
 
 ### File Paths
+File paths provide a map to where your file is stored in the computer. With each successive "\\" in Windows or "/" in Mac oS, the file path is going deeper and deeper into subfolders. File paths can be frustrating because you have to get them exactly right for R to be able to access your data
 
 
 ### Import Functions
