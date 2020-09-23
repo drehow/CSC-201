@@ -17,7 +17,7 @@ In this project, you'll perform a similar process to the two labs, but you're th
 ### Prompt
 Here are the specific steps for the project:
 
-1. Look through the data sets available in the Tidy Tuesday repository and choose one that is interesting to you.
+1. Look through the data sets available in the [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday) repository and choose one that is interesting to you.
     + Multiple people can use the same data set. **This is not a group project**, but multiple independent projects may be performed on the same data set. 
     + Take care to pick a data set that you think could yield some interesting insights and visualizations. Specifically, try to steer clear of data sets that only have categorical variables, as your visualization options with those are limited. You may still choose such a data set, but it might be more difficult to explore and gain insight. 
     + There are no limits to the size of the data set that you can choose - what matters is that you explore it adequately. However, make sure you have enough data to work with. Sometimes there just isn't enough data to derive any insights, so it's less risky to go with a larger data set. 
