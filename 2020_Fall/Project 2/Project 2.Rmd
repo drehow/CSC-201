@@ -1,0 +1,12 @@
+---
+title: "Project 2"
+author: "D. Howell"
+date: "9/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Find two data sets not from the tidy tuesday repo, clean it, join it, explore it, model it and compare the evaluated models

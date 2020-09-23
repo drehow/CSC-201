@@ -1,0 +1,15 @@
+---
+title: "Relational Data"
+author: "D. Howell"
+date: "9/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+When you are performing data science outside of the isolated environment of an Intro to Data Science class, you won't often find all the data you need for the analysis you intend to perform in just one data set. This is true for when you are pulling data from completely different sources, but more often you will find that you need to join data from different tables within one database. In this and the next class, we'll talk comprehensively about the different ways that you can join data together, the advantages and disadvantages of each, and then we'll cover relational databases from 30,000 feet to give you an idea of the environment you are likely to deal with to some extent if you end up working at a corporation. 
+
+At the bank where I work, for example, I may need need to analyze default payment behavior by geographical location. In our database, there is one table that contains transactional data about each payment a borrower has made: when they made it, how much it was, when it was originally due, etc. There's also a table with descriptive features that were gathered from the application for the mortgage that was filled out by the borrower: where the property is located, what the appraisal value was at the time of the application, what their down payment was, etc. It would be impossible for me to complete my analysis by just pulling data from one of these two tables. I need to pull the fields I want from them both and join them together based on at least one column that they have in common. At work, both of these tables have the account number for the loan, so I can join them based on that and then get to work. 
+
