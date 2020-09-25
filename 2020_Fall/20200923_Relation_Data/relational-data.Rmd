@@ -13,3 +13,64 @@ When you are performing data science outside of the isolated environment of an I
 
 At the bank where I work, for example, I may need need to analyze default payment behavior by geographical location. In our database, there is one table that contains transactional data about each payment a borrower has made: when they made it, how much it was, when it was originally due, etc. There's also a table with descriptive features that were gathered from the application for the mortgage that was filled out by the borrower: where the property is located, what the appraisal value was at the time of the application, what their down payment was, etc. It would be impossible for me to complete my analysis by just pulling data from one of these two tables. I need to pull the fields I want from them both and join them together based on at least one column that they have in common. At work, both of these tables have the account number for the loan, so I can join them based on that and then get to work. 
 
+In this class, we're working with a data set I pulled from our database at work. I've edited it a little to help make the concepts more explicit. The data is regarding part of our mortgage portfolio, so the central object is a loan. 
+
+## Relational Databases
+Any company that handles data should have a database. Most of them do, and most of those databases are structured relationally. Databases can have hundreds and even thousands of fields, so one way to manage a number like that is to separate the fields into different tables, where each table holds data about something specific.
+
+Side note: when you pull data from a database, that's called "querying" the database. Queries have to be written in a language that the databases understand, usually some form of SQL (Structured Query Language). We won't cover SQL in this class, but it's easier to learn than R, and it's very useful for an entry-level analyst. Most of the new analysts that were hired at Gateway this year came in with some knowledge of SQL. 
+
+Show SSMS window
+
+In our sandbox data, we have tables about the original dollar amount of the loan, the interest rate, the location of the property the loan is for, the type of loan, when the loan started, and the cost to produce a loan. 
+
+Each loan has an account number, and most of the tables in our data have a column for the account number. That makes them conceptually pretty easy to join. Want to join the note rate table with the original balance table? Just match up the loan numbers and there it is. However, one of the tables has the cost to produce each loan by type, not account number, so we will need to figure out how to tack on a "Cost to Produce" column to our central data set. 
+
+### Primary Keys
+Relational databases are structured in terms of keys. A key is a column that is shared between two tables, so you want to join two tables on their shared key. There are different kinds of keys: primary and foreign. 
+
+A primary key is what a table structured around. If a table is storing data about mortgages, the primary key would be a unique identifier for each loan, i.e. the account number (in this example, each loan is an account). It follows that no two records can have the same primary key - two loans cannot be one loan. 
+
+### Foreign Keys
+A foreign key identifies an observation in another table. In our data, the cost to produce each loan varies by type, not individual loans. If loans can only be one of seven different types, there is no need to store the cost to produce each loan. Just store what type each loan is and then you can tell how much it costed to produce that loan. By that logic, our "cost to produce" table only has 7 or 8 rows. 
+
+The "cost to produce" table still needs to be joined to the central data set though. Since it doesn't have an account number column (the primary key from the main table), it is related by the Type column. In this case, "Type" is a **Foreign Key** in the main table, and it is the primary key in the Costs table. 
+
+## Joins
+You all have already had to join data sets in this class. In Lab 1, you joined a data set of populations by state to a data set about covid cases that had a column for states. State was a foreign key. Our data didn't have a primary key specifically defined, but it would've been the unique combination of state and date. Keys don't really directly apply in that scenario though, because that data wasn't from a relational database. 
+
+Any join involves two data sets. You can call these the left data set and the right one. Sometimes, even though the two data sets share a key, they might have unique key values that the other data set doesn't have. 
+
+Maybe the Location data set doesn't have data for all the accounts in the Status data set. What do you do with the mismatches?
+
+There are different ways to join two tables together. Let's start with the left join. 
+
+First we need to read in (import) our data. 
+```{r}
+library(readxl)
+
+setwd('')
+main <- read_xlsx(
+
+```
+
+### Left Join (Outer)
+
+```{r}
+
+```
+
+### Right Join (Outer)
+```{r}
+
+```
+
+### Full Join (Outer)
+```{r}
+
+```
+
+### Inner Join (Inner)
+```{r}
+
+```
