@@ -1,0 +1,203 @@
+---
+title: "Relational Data, pt. 2"
+author: "D. Howell"
+date: "9/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We'll start with a quick recap of the last class to refresh your minds with regard to joining relational data. 
+
+* Relational data can be linked together with the use of keys: columns that are shared between the two data sets. 
+  + **Inner joins** only keep rows where the values in the key columns are present in both data sets. 
+    ![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\inner-join.jpg)
+  + **Full Joins**  leep every key value present in either data set, and if the key value from one data set is not present in the other, then the values of the columns from the other data set will be NA for that key value. 
+  + **Left Joins** keep all the key values from the left data set and drop rows from the right data set where the key values are not present in the left data set. 
+  + **Right Joins** are the same as left joins, except they keep the right and drop the left. 
+    ![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\outer-joins.jpg)
+
+***
+
+And to sum it all up in a different type of graphic...
+
+![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\venn.jpg)
+
+***
+
+Picking up where we left off in the last class we keep working on joining our mortgage data set. The goal here is to full join every column from every table into one big data set. Surely we will have NA's in this whole data set, because we discovered last time that the tables do not have the exact same list of loan numbers. But I think it would be best to not drop any records as we are joining, and then if we need to drop some of the records with NA's in certain columns, it's easy to do. 
+
+So we start by importing our data, which we developed the code for last time. 
+
+```{r, warnings = FALSE, messages = FALSE}
+library(readxl)
+library(dplyr)
+
+# setting the working directory so that I don't have to keep typing the same file path for every table. 
+setwd('C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2')
+
+balance_type <- read_xlsx('mortgages.xlsx', sheet = 'Main')
+rates <- read_xlsx('mortgages.xlsx', sheet = 'Rates')
+location <- read_xlsx('mortgages.xlsx', sheet = 'Location')
+start_date <- read_xlsx('mortgages.xlsx', sheet = 'Start Date')
+status <- read_xlsx('mortgages.xlsx', sheet = 'Status')
+cost <- read_xlsx('mortgages.xlsx', sheet = 'Cost')
+```
+
+We can really start anywhere, but I'm going to join balance_type with location because we know from last time that they have the same column names for their shared key. But we can get the column names of each data set to make sure we are remembering correctly. 
+
+```{r, warnings = FALSE, messages = FALSE}
+#get column names
+names(balance_type)
+names(location)
+
+working_main_1 <- full_join(balance_type, location)
+
+# compare the row numbers
+nrow(balance_type)
+nrow(location)
+nrow(working_main_1)
+
+# compare the column nams
+names(working_main_1)
+```
+
+Now let's tack on start date. Again, we need to check the column names. I know that these two both have key columns that are the account number for the loan, but the full_join function will not know how to pick out the keys if they do not have the same name. One solution would be to change one of the column names in one of data sets to match the other. The more technically correct way to do it would be to explicitly define the keys inside the join function. 
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_1)
+names(start_date)
+
+working_main_2 <- full_join(working_main_1, start_date, by = c('Account' = 'Loan_Number'))
+
+# compare the row numbers
+nrow(working_main_1)
+nrow(start_date)
+nrow(working_main_2)
+
+# compare the column nams
+names(working_main_2)
+```
+
+Next, I'd like to do status. 
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_2)
+names(status)
+
+working_main_3 <- full_join(working_main_2, status, by = c('Account' = 'Acct'))
+
+# compare the row numbers
+nrow(working_main_2)
+nrow(status)
+nrow(working_main_3)
+
+# compare the column nams
+names(working_main_3)
+```
+
+The only two tables left to join are the costs and the rates. These are going to be different because they don't have Account columns. We need to find another column that they share with the main data set so that we can join on that. Starting with Costs. 
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_3)
+names(cost)
+
+# looks like they both have a type column, although it's named differently. 
+
+working_main_4 <- full_join(working_main_3, cost, by = c('Type' = 'Loan_Type'))
+
+# compare the row numbers
+nrow(working_main_3)
+nrow(cost)
+nrow(working_main_4)
+
+# compare the column nams
+names(working_main_4)
+```
+
+Joining on the rates table is going to be a bit harder because it only has rates by year. We have a column in the main data set telling us when the loan started, so we can use that as the key. But the rates table doesn't have specific dates, only year. So we need to isolate the year from each start date in the main table. Good thing we already covered mutates!
+
+```{r, warnings = FALSE, messages = FALSE}
+head(rates$year)
+head(working_main_4$Start_Date)
+class(working_main_4$Start_Date)
+working_main_4$Start_Date <- as.Date(working_main_4$Start_Date)
+
+library(lubridate)
+
+working_main_4 <- working_main_4 %>%
+  mutate(start_year = year(Start_Date))
+
+names(working_main_4)
+names(rates)
+
+# looks like they both have a type column, although it's named differently. 
+
+working_main_5 <- full_join(working_main_4, rates, by = c('start_year' = 'year'))
+
+# compare the row numbers
+nrow(working_main_4)
+nrow(status)
+nrow(working_main_5)
+
+# compare the column nams
+names(working_main_5)
+
+# all of the tables have been joined together, so I'm going to make a new data set named "main"
+main <- working_main_5
+```
+
+Now we got it! The whole set of tables is joined together in working_main_5. Now, as always, we need to check the data set for duplicates and decide what to do with those of they are present. 
+
+```{r, warnings = FALSE, messages = FALSE}
+# first we want to check if there are duplicates in the Account column, because we don't want to be counting loans twice in our analysis. 
+TRUE %in% duplicated(main$Account)
+
+# since that yields TRUE, we know that there are duplicates. So let's try to filter down to the rows that are marked duplicated.
+dupes <- main %>%
+  filter(duplicated(Account))
+```
+
+Weird that they are all NA's. I wonder if the duplicated function returns true for repeated NA's 
+
+
+```{r, warnings = FALSE, messages = FALSE}
+duplicated(c(NA, NA))
+```
+
+Looks like it does. So exploring further, it seems like the only columns that aren't NA in the duplicated rows are start_year and rate, which came from the full join we did with the rates table. Knowing how full joins work, and that we used the year column as the key for that join, we can surmise that the reason these rows have NAs in the Account column is because there are no accounts from the years 2015-2017 in the main table. We can check that by getting the minimum year from the Start_Date column. 
+
+```{r, warnings = FALSE, messages = FALSE}
+min(main$Start_Date)
+
+#got an NA, so I need to add the na.rm = T argument
+min(main$Start_Date, na.rm = T)
+```
+
+So it all makes sense now. Our main data set doesn't include loans from before 2018, so that's why we got those extra rows. We also got an extra row when we joined on the cost data set, so let's go ahead and check that. I'm thinkink one way to do that would be to get the counts of each key from the cost data set in the main data set. If we remove the rows that are NA in the account column first, we should be able to see if any of the keys have a count of zero, which would tip us off as to why one row got added. Furthermore, I might even go so far as to say that only one key from the cost data set was not in the main data set, because we only added one row that time. 
+
+```{r, warnings = FALSE, messages = FALSE}
+main_no_na <- main[!is.na(main$Account),]
+
+main_no_na %>%
+  group_by(Type) %>%
+  summarize(count = n())
+```
+
+Actually, it looks like the main data set has some values in the Type column that aren't in the Cost data set...
+
+```{r, warnings = FALSE, messages = FALSE}
+unique(main_no_na$Type) %in% cost$Loan_Type
+
+#put this in a dataframe so we can tell which ones. 
+check <- data.frame(
+  Type = unique(main_no_na$Type),
+  InCost = unique(main_no_na$Type) %in% cost$Loan_Type
+)
+
+unique(cost$Loan_Type)
+```
+
+So now I think that the issue there is that so-called "184" loans are also sometimes called Construction loans. To join these together appropriately, we'd need to go back to the code immediately before we joined on cost and change all the 184's in the main data set to "CONSTRUCTION". 

@@ -1,0 +1,187 @@
+---
+title: "Relational Data, pt. 2"
+author: "D. Howell"
+date: "9/25/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Recap
+
+* Relational data can be linked together with the use of keys: columns that are shared between the two data sets. 
+    ![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\inner-join.jpg)
+
+    ![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\outer-joins.jpg)
+
+
+![](C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2\\venn.jpg)
+
+## Importing data
+```{r, warnings = FALSE, messages = FALSE}
+library(readxl)
+library(dplyr)
+
+# setting the working directory so that I don't have to keep typing the same file path for every table. 
+setwd('C:\\Users\\drew.howell\\Desktop\\CSC-201\\2020_Fall\\20200925_Relational_Data_2')
+
+balance_type <- read_xlsx('mortgages.xlsx', sheet = 'Main')
+rates <- read_xlsx('mortgages.xlsx', sheet = 'Rates')
+location <- read_xlsx('mortgages.xlsx', sheet = 'Location')
+start_date <- read_xlsx('mortgages.xlsx', sheet = 'Start Date')
+status <- read_xlsx('mortgages.xlsx', sheet = 'Status')
+cost <- read_xlsx('mortgages.xlsx', sheet = 'Cost')
+```
+
+## Joining location
+
+```{r, warnings = FALSE, messages = FALSE}
+#get column names
+names(balance_type)
+names(location)
+
+working_main_1 <- full_join(balance_type, location)
+
+# compare the row numbers
+nrow(balance_type)
+nrow(location)
+nrow(working_main_1)
+
+# compare the column nams
+names(working_main_1)
+```
+
+## Start date
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_1)
+names(start_date)
+
+working_main_2 <- full_join(working_main_1, start_date, by = c('Account' = 'Loan_Number'))
+
+# compare the row numbers
+nrow(working_main_1)
+nrow(start_date)
+nrow(working_main_2)
+
+# compare the column nams
+names(working_main_2)
+```
+
+## Status 
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_2)
+names(status)
+
+working_main_3 <- full_join(working_main_2, status, by = c('Account' = 'Acct'))
+
+# compare the row numbers
+nrow(working_main_2)
+nrow(status)
+nrow(working_main_3)
+
+# compare the column nams
+names(working_main_3)
+```
+
+## Cost 
+
+```{r, warnings = FALSE, messages = FALSE}
+names(working_main_3)
+names(cost)
+
+# looks like they both have a type column, although it's named differently. 
+
+working_main_4 <- full_join(working_main_3, cost, by = c('Type' = 'Loan_Type'))
+
+# compare the row numbers
+nrow(working_main_3)
+nrow(cost)
+nrow(working_main_4)
+
+# compare the column nams
+names(working_main_4)
+```
+
+## Rates
+
+```{r, warnings = FALSE, messages = FALSE}
+head(rates$year)
+head(working_main_4$Start_Date)
+class(working_main_4$Start_Date)
+working_main_4$Start_Date <- as.Date(working_main_4$Start_Date)
+
+library(lubridate)
+
+working_main_4 <- working_main_4 %>%
+  mutate(start_year = year(Start_Date))
+
+names(working_main_4)
+names(rates)
+
+# looks like they both have a type column, although it's named differently. 
+
+working_main_5 <- full_join(working_main_4, rates, by = c('start_year' = 'year'))
+
+# compare the row numbers
+nrow(working_main_4)
+nrow(status)
+nrow(working_main_5)
+
+# compare the column nams
+names(working_main_5)
+
+# all of the tables have been joined together, so I'm going to make a new data set named "main"
+main <- working_main_5
+```
+
+## Checking for duplicates
+
+```{r, warnings = FALSE, messages = FALSE}
+# first we want to check if there are duplicates in the Account column, because we don't want to be counting loans twice in our analysis. 
+TRUE %in% duplicated(main$Account)
+
+# since that yields TRUE, we know that there are duplicates. So let's try to filter down to the rows that are marked duplicated.
+dupes <- main %>%
+  filter(duplicated(Account))
+```
+
+
+```{r, warnings = FALSE, messages = FALSE}
+duplicated(c(NA, NA))
+```
+
+### Rates duplicates
+
+```{r, warnings = FALSE, messages = FALSE}
+min(main$Start_Date)
+
+#got an NA, so I need to add the na.rm = T argument
+min(main$Start_Date, na.rm = T)
+```
+
+### Type duplicates
+
+```{r, warnings = FALSE, messages = FALSE}
+main_no_na <- main[!is.na(main$Account),]
+
+main_no_na %>%
+  group_by(Type) %>%
+  summarize(count = n())
+```
+
+```{r, warnings = FALSE, messages = FALSE}
+unique(main_no_na$Type) %in% cost$Loan_Type
+
+#put this in a dataframe so we can tell which ones. 
+check <- data.frame(
+  Type = unique(main_no_na$Type),
+  InCost = unique(main_no_na$Type) %in% cost$Loan_Type
+)
+
+unique(cost$Loan_Type)
+```
+
