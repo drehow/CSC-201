@@ -1,0 +1,146 @@
+---
+title: "Functions"
+author: "D. Howell"
+date: "9/28/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Concept
+You have a data.frame object called `df`
+One discrete column, with 5 categories. 
+Want to perform a task only the rows of `df` where the discrete column is one of the values at a time. 
+
+```{r, eval = FALSE}
+
+# build the function
+my_function_name <- function(argument_1){
+  command_1
+  command_2
+  ...
+}
+
+# perform the function
+my_function_name(df)
+
+```
+
+
+## Goal of Analysis
+Data = mortgages
+
+We want to make one graph for each type of mortgage showing the counts by the state in which the property is located. 
+
+## Building our Base Data Set
+We start by reading in all of our data.  
+
+```{r, message=FALSE}
+library(readr)
+
+df1 <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200928_Functions/data_1.csv')
+df2 <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200928_Functions/data_2.csv')
+df3 <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200928_Functions/data_3.csv')
+df4 <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200928_Functions/data_4.csv')
+df5 <- read_csv('https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20200928_Functions/data_5.csv')
+```
+
+rbind() for appending instead of a join
+
+```{r}
+df_all <- rbind(df1, df2, df3, df4, df5)
+```
+
+Start developing
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# this command outputs all CONV loans
+df_all %>% filter(TYPE == 'CONV')
+
+# now we need to plot this output to get counts by state, so we need to use the geom_bar()
+df_all %>% filter(TYPE == 'CONV') %>%
+  ggplot() +
+  geom_bar(aes(x = STATE))
+
+# looks good. let's give it a title so that we know what type of loan this graph is for. 
+df_all %>% filter(TYPE == 'CONV') %>%
+  ggplot() +
+  geom_bar(aes(x = STATE))  +
+  labs(title = 'CONV Loans by State' ,
+       y="Count", 
+       x="State") 
+
+```
+
+## Actual Quote
+
+> This development process would've been so much simpler if we had made a function for it at the beginning. -Every single new developer
+
+## Rewind and use functions instead. 
+
+Start developing . . . . 
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# this command outputs all CONV loans
+df_all %>% filter(TYPE == 'CONV')
+
+# now we need to plot this output to get counts by state, so we need to use the geom_bar()
+df_all %>% filter(TYPE == 'CONV') %>%
+  ggplot() +
+  geom_bar(aes(x = STATE))
+
+# looks good. let's give it a title so that we know what type of loan this graph is for. 
+df_all %>% filter(TYPE == 'CONV') %>%
+  ggplot() +
+  geom_bar(aes(x = STATE))  +
+  labs(title = 'CONV Loans by State' ,
+       y="Count", 
+       x="State") 
+
+```
+
+Make a function to do it.
+```{r}
+plot_type <- function(type){
+  df_all %>% filter(TYPE == type) %>%
+  ggplot() +
+  geom_bar(aes(x = STATE))  +
+  labs(title = paste0(type,' Loans by State') ,
+       y="Count", 
+       x="State") 
+}
+```
+
+Gotta plot 'em all
+```{r}
+plot_type('CONV')
+plot_type('FHA')
+plot_type('USDA')
+plot_type('184')
+plot_type('VA')
+plot_type('CONV WITH MI')
+plot_type('OTHER')
+```
+
+
+
+
+## Functions in Context
+
+### Don't write a function when 
+
+* you only have to perform a task once in your script
+* function is performing only one or two lines of code
+
+## Week Schedule 
+
+* Wednesday is Conditionals 19.4
+* Friday is Loops 21. 
