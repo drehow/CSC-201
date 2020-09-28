@@ -1,0 +1,52 @@
+---
+title: "Functions"
+author: "D. Howell"
+date: "9/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+As you are developing scripts for your projects and labs, some tasks can be repetitive. Let's say you have a task (a chunk of code) that filters a data set on some criteria and then plots it with ggplot2. With what we've learned so far, you would have to copy and paste that code as many times as you needed to run that task with different filter criteria. Then if you wanted to change one thing about the task, you have to go through all the copies that you pasted and make the same change. 
+
+To fix the issue, you need a way of consolidating the code that makes up your task into one command, and then run that one command for every repitition of the task. This consolidation happens in the custom function. 
+
+You've used used functions a lot up to this point. filter(), mutate(), ggplot(), names(), data.frame() are all functions, but they're predefined in their respective packages. You can create your own custom functions that are more specific to the task you are trying to accomplish. That's what we're covering today. We'll start with the concepts and syntax to build functions in R, and then quickly move on to some examples. 
+
+If you haven't already, I'd encourage you to read Ch. 19 in the textbook. It goes into more depth about when/how to use functions, conditionals, return values, etc. We're just going to cover the basics, most of which are also in the book in some form. 
+
+### The Concept
+Let's say you have a data.frame object called `df`, and one of the columns is discrete with 5 different categories. You want to perform a task only one the rows of `df` where the discrete column is one of the values at a time. The function you'd write to perform those values consists of the following. 
+
+```{r, eval = FALSE}
+
+# build the function
+my_function_name <- function(argument_1){
+  command_1
+  command_2
+  ...
+}
+
+# perform the function
+my_function_name(df)
+
+```
+
+Before we go any further into the specifics, let's set the stage for our examples. We start with 5 data sets that all have the same columns and column names. They all have 50 rows, and we want to analyze the whole population, so we need to read them all in and join them together. 
+
+#### Goal of Analysis
+The data is about mortgages again. We want to make one graph for each type of mortgage showing the counts by the state in which the property is located. 
+
+#### Building our Base Data Set
+We start by reading in all of our data. I've already posted the data sets on my github account as CSV files, so we can use read_csv() and give it the url for the raw data. 
+
+```{r}
+library(readr)
+
+```
+
+### Functions in Context
+There are some instances where creating a function is a waste of time. For instance, if you only have to perform a task once in your script, it could be an unnecessary hassle to build a function above it only to run it once. You should use functions when you are going to have to copy/paste a chunk of code more than a couple of times. Likewise, if the function is performing only one or two lines of code, it could be unnecessary to build it when you could just write the couple of lines where they need to go. 
+
