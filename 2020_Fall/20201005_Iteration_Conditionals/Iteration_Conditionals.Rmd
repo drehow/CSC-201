@@ -1,0 +1,193 @@
+---
+title: "Conditionals and Iteration"
+author: "D. Howell"
+date: "10/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+Sometimes the data you're working with is messy. Actually, most of the time it's messy. It could've been gathered from different sources using different units of measurement, different date or currency formats, "Last name, First name" and "First name Last name" in the same column. In cases like these, often the data needs to be cleaned row-by-row because one command to reformat the whole column wouldn't apply correctly to all of the values. It's often best to use loops and conditionals for these types of cleaning tasks. 
+
+### Iteration
+Loops rerun the same chunk of code a set number of times. The most common types of loops are for() and while(). Today we're just focusing on the FOR loop, which is significantly more common in my applications than while(). 
+
+Let's look at some of the most basic for loops ever to get an idea of how they work. 
+```{r}
+for(number in 1:10){
+  cat(
+    paste0(' loop',number)
+  )
+}
+
+for(i in 1:10){
+  cat(
+    paste0(' loop',i)
+  )
+}
+
+numbers <- NA
+for(i in 1:10){
+  numbers[i] <- paste0('Loop ',i)
+}
+numbers
+
+vals <- c(1,5,10,50,20,10,90,70,30,45)
+for(i in 1:length(vals)){
+  cat(paste0('Val ',vals[i], '\n'))
+}
+
+# one while loop just for kicks and giggles
+i <- 1
+while(i < 18){
+  cat(c(' loop', i))
+  i = i+1
+}
+
+
+```
+
+### Conditionals
+You are probably all familiar with conditionals. We used them in Lab 1 with the Excel =IF() function. Conditionals run different commands based on a logical statement. In R, you can use conditionals in a few formats. 
+
+```{r}
+vals <- c(1,5,10,50,20,10,90,70,30,42)
+
+# for one logic statement and simple commands run on multiple values
+ifelse(vals < 35, 'Below 35','Above or equal to 35')
+
+# for multiple logic and simple commands run on multiple values
+ifelse(vals < 35, 'Below 35',
+       ifelse( vals < 45, 'Below 45',
+               ifelse( vals >44, 'greater than 44', 'unknown')
+       )
+)
+
+# for multiple logic statements and multiple steps of code on a single value
+conclusion <- NA
+if(vals[4] < 35){
+  conclusion <- 'Below 35'
+  cat(paste0('Conclusion: ',conclusion))
+} else if (vals[4] > 55){
+  conclusion <- 'Big number'
+  cat(paste0('Conclusion: ',conclusion))
+} else {
+  conclusion <- 'regular number'
+  cat(paste0('Conclusion: ',conclusion))
+}
+```
+
+Now the only cleaning issue we have left is how to run multiple logical statements, and multiple commands, on multiple values. Let's bump loops and conditionals together. 
+
+```{r}
+for (i in 1:length(vals)) {
+  
+  if (vals[i] < 35) {
+    
+    conclusion[i] <- 'baby number'
+    cat(
+      paste0('\n Conclusion ',i, ' is: ',conclusion[i])
+    )
+  
+  } else if (vals[i] > 55) {
+      
+    conclusion[i] <- 'Big number'
+    cat(paste0('\n Conclusion ',i, ' is: ',conclusion[i]))
+  
+  } else {
+      
+    conclusion[i] <- 'regular number'
+    cat(paste0('\n Conclusion ',i, ' is: ',conclusion[i]))
+    
+  }
+  
+}
+
+df <- data.frame(vals, conclusion)
+```
+
+## Example Data
+Our example data set is the Tour de France winners from the Tidy Tuesday list, except it isn't as clean as before. 
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+df <- read_csv('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201005_Iteration_Conditionals/tdf_winners_new.csv')
+```
+
+* distances come in different measurements
+* times are in different measurements
+* the names column has some lastname, firstname and some firstname lastname
+
+> **Analysis Goal:** Plot counts of winners that won by 100 meters or less (calculated by average pace) vs greater than 100 meters.
+
+So, we need to get average speed in terms of meters per second (could be m/min, m/hour for our calculation also, but m/s is a more common unit for speed). Then we need to make a column based on the average speed and time_margin that tells us the distance that the winner won by. THEN we need to make another column based on that that tells us whether they won by 100 meters or less or not. 
+
+It doesn't seem like we can use the functions we already know about to tidy up this data set, so let's try iterations and conditionals. 
+
+### Handling the distance measurements
+The column right next to distance tells us the unit for the distance measurements
+```{r}
+distance_meters <- NA
+df <- add_column(df, distance_meters, .after = 6)
+
+for(i in 1:nrow(df)){
+  cat(paste0(' ',i))
+  if(df$distance_unit[i] == 'KM'){
+    df$distance_meters[i] <- df$distance[i] * 1000
+  } else if (df$distance_unit[i] == 'MI'){
+    df$distance_meters[i] <- df$distance[i] * 1609.34
+  } else {
+    df$distance[i] <- NA
+  }
+}
+```
+
+### Handling the time columns
+Some of the time measurements are already in seconds, so we don't want to do anything with those.
+```{r}
+time_overall_seconds <- NA
+time_margin_seconds <- NA
+df <- df %>% 
+  add_column(time_overall_seconds, .after = 10) %>%
+  add_column(time_margin_seconds, .after = 11)
+
+
+for(i in 1:nrow(df)){
+  if(df$time_unit[i] == 'sec'){
+    df$time_overall_seconds[i] <- df$time_overall[i]
+    df$time_margin_seconds[i] <- df$time_margin[i]
+  } else if (df$time_unit[i] == 'hr'){
+    df$time_overall_seconds[i] <- df$time_overall[i] * 3600
+    df$time_margin_seconds[i] <- df$time_margin[i] * 3600
+  } else {
+    df$time_margin_seconds[i] <- NA
+    df$time_overall_seconds[i] <- NA
+  }
+}
+
+```
+
+Now get m/s
+```{r}
+df$met_sec <- df$distance_meters / df$time_overall_seconds
+```
+
+Finally, winning distance
+```{r}
+df$distance_margin <- df$time_margin * df$met_sec
+df$winDistLessThan100 <- ifelse(df$distance_margin <= 100, 'Yes', 'No')
+```
+
+And our plot
+```{r}
+df_group <- df %>%
+  group_by(df$winDistLessThan100) %>%
+  count() 
+
+names(df_group) <- c('LessThan100m', 'Count')
+  
+ggplot(df_group) + 
+  geom_bar(aes(x = LessThan100m, y=Count), stat = 'identity')
+```
