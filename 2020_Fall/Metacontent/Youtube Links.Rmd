@@ -1,0 +1,29 @@
+---
+title: "CSC-201 Links"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+* [Course Introduction](https://youtu.be/agZgHjDlHsI)
+* [Data Literacy](https://youtu.be/NHLudyQl-y0)
+* [Analytics with Excel, pt. 1](https://youtu.be/MKHwXuLMVu8)
+* [Analytics with Excel, pt. 2](https://youtu.be/TPdmRUdiSLI)
+* [IDE's and Packages](https://youtu.be/f3O6xFmBkc0)
+* [Building Visualizations](https://youtu.be/FTEB_cYy76s)
+* [R Basics](https://youtu.be/tconE8L2jns)
+* [Data Transformation: filter()](https://youtu.be/-ZT-wYBh0Wk)
+* [Data Transformation: select(), arrange(), mutate()](https://youtu.be/Ll0nL5MFYXc)
+* [Data Transformation: Grouped Summaries](https://youtu.be/YWSXkZ98eMA)
+* [Common Errors](https://youtu.be/yi_khZY6jy8)
+* [Variation](https://youtu.be/qhenZtfoWUw)
+* [Covariation](https://youtu.be/ROHFqG1py8I)
+* [Project 1 / Importing Data](https://youtu.be/Y0hMwDrepKY)
+* [Relational Data, pt. 1](https://youtu.be/NqBeejMzsqU)
+* [Relational Data, pt. 2](https://youtu.be/dZS0J23UGz0)
+* [Functions](https://youtu.be/jqWJ8YMdYkE)
+* [Reviewing Lab 2](https://youtu.be/YjoGVYPVkE8)
+* [Conditionals and Iteration](https://youtu.be/JI5p8WZQZBM)
