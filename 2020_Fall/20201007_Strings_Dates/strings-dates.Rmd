@@ -1,0 +1,51 @@
+---
+title: "Strings and Dates"
+author: "D. Howell"
+date: "10/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For our last lesson in the Wrangling (data cleaning) unit, I wanted to spend some time talking about how to handle strings and dates. In my experience, figuring out how to clean character strings and date formats make up at least half the time you spend developing a cleaning script. And to reiterate a familiar concept in data science, there is no universally correct way to handle them; it all depends on the goal of your analysis and the state of the source data you are working with. 
+
+### Dates
+
+<a href="https://www.r-bloggers.com/2013/08/date-formats-in-r/" target="_blank">R Date Format Key</a>
+
+```{r}
+d1 <- '2019-12-02'
+d2 <- '2020-03-02'
+
+
+```
+
+
+```{r}
+library(readxl)
+df <- read_xlsx('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201007_Strings_Dates/LoanData.xlsx')
+
+
+
+library(lubridate)
+
+# df <- df[df$Payoff_Date > as.Date('1900-01-01'),]
+
+
+monDif_1 <- function(d1, d2) {floor(as.numeric(as.Date(d2)-as.Date(d1), units='hours')/(30.42*24))}
+monDif_2 <- function(d1, d2) {return(length(seq(from=as.Date(d1), to=as.Date(d2), by='month')) - 1)}
+
+d1 <- '2020-01-31'
+d2 <- '2020-03-02'
+
+monDif_1(d1,d2)
+monDif_2(d1,d2)
+
+
+
+# df$monLife <- monDif(df$Payoff_Date,df$Close_Date)
+```
+
+
