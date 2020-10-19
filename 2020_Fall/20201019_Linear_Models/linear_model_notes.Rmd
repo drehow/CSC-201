@@ -21,6 +21,8 @@ knitr::opts_chunk$set(echo = TRUE)
   + $y = b + m_1x_1 + m_2x_2 + ...$
   + Multiple vs. Single Linear Regression
   + plot shape in Wolfram Alpha
+* Model Fitting
+  + Draw line at minimum error
 * Model Input
   + Continuous and not discrete
 * Model Output
@@ -46,14 +48,15 @@ voted$version <- NULL
 ids <- unique(voted$ID)
 
 
-i=1
+i=2820
 for (i in 1:length(ids)){
+
   temp <- voted[voted$ID == ids[i],]
   if(!F %in% is.na(temp$candidatevotes)){
     next
   }
-  temp$spectrum <- -as.numeric(na.omit((temp$candidatevotes[temp$party=='democrat']/temp$totalvotes[temp$party=='democrat'] *10))) + 
-    as.numeric(na.omit((temp$candidatevotes[temp$party=='republican']/temp$totalvotes[temp$party=='republican'] *10)))
+  temp$spectrum <- (-as.numeric(na.omit((temp$candidatevotes[temp$party=='democrat']/temp$totalvotes[temp$party=='democrat'] *10))) + 
+    as.numeric(na.omit((temp$candidatevotes[temp$party=='republican']/temp$totalvotes[temp$party=='republican'] *10))))[1]
   x <- temp[temp$candidatevotes == max(temp$candidatevotes),]
   
   if(i==1){
@@ -112,6 +115,14 @@ summ(model_a)
 summ(model_b)
 
 ```
+### Interpreting the output
+
+* p-value
+  + measures the significance of your results
+  + hypothesis testing
+* R-squared
+  + measures how much of the data is explained by your model
+
 
 ## Modelling with Normalized Predictors
 ```{r, message=FALSE, warning=FALSE}
