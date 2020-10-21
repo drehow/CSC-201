@@ -14,18 +14,27 @@ knitr::opts_chunk$set(echo = TRUE)
 ![](lm.png)
 
 * Model Uses
+
   + numeric predictions based on a linear relationship between predictor and response variable.
   + calculate the extent to which a response variable may be linearly related to a predictor variable (
   + calculate which of the predictor variables (if any) are statistically significant. 
+  
 * Model Shape
+  
   + $y = b + m_1x_1 + m_2x_2 + ...$
   + Multiple vs. Single Linear Regression
   + plot shape in Wolfram Alpha
+  
 * Model Fitting
+
   + Draw line at minimum error
+  
 * Model Input
+
   + Continuous and not discrete
+  
 * Model Output
+
   + Continuous (regression)
   
 ## Data Import and Cleaning
@@ -35,7 +44,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, message=FALSE, warning=FALSE}
 library(readr)
 
-setwd('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201019_Linear_Models/')
+setwd('/Users/drewhowell/Desktop/CSC-201/2020_Fall/20201019_Linear_Models/')
 
 education <- read_csv('education_county.csv')
 voted <- read_csv('voted_county.csv')
