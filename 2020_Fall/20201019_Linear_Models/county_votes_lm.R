@@ -92,3 +92,49 @@ ggplot(df, aes(turnout, spectrum)) +
 ggplot(df, aes(ed_spectrum, spectrum)) + 
   geom_point() + 
   geom_smooth(method='lm')
+
+
+######
+######
+
+
+
+df$ed_percentile <- percent_rank(df$ed_spectrum)
+df$ed_rank <- ifelse(df$ed_percentile < 0.25, 'Q1', 
+                     ifelse(df$ed_percentile >=0.25 & df$ed_percentile < 0.5, 'Q2',
+                            ifelse(df$ed_percentile >=0.5 & df$ed_percentile < 0.75, 'Q3','Q4')))
+
+ggplot(df) + 
+  geom_bar(aes(df$ed_rank))
+
+df$edRank_Q1 <- ifelse(df$ed_rank == 'Q1',1,0)
+df$edRank_Q2 <- ifelse(df$ed_rank == 'Q2',1,0)
+df$edRank_Q3 <- ifelse(df$ed_rank == 'Q3',1,0)
+df$edRank_Q4 <- ifelse(df$ed_rank == 'Q4',1,0)
+
+model <- lm(spectrum ~ 
+              # edRank_Q1 +
+              edRank_Q2 +
+              edRank_Q3 +
+              edRank_Q4
+            , df)
+
+
+model <- lm(spectrum ~ turnout + ed_rank, df)
+model_a <- lm(spectrum ~ turnout, df)
+model_b <- lm(spectrum ~ ed_rank, df)
+
+
+summ(model)
+ols_coll_diag(model)
+# install.packages('olsrr')
+library(olsrr)
+
+vif(model)
+
+ggplot(df, aes(x=edRank_Q4, y=spectrum)) + 
+  geom_point( alpha = 1/50) + 
+  geom_smooth(method = 'lm') + 
+  theme_bw()
+
+summ(model_b)
