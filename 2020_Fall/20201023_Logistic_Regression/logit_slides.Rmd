@@ -1,0 +1,118 @@
+---
+title: "Logistic Regression"
+author: "D. Howell"
+date: "10/23/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+* Model Shape
+  + $\frac{1}{1+e^{(b_0+b_1x_1 . . .)}}$
+  + Multiple vs. Single Regression
+* Model Fitting
+  + Draw line at minimum error
+* Model Input
+  + Continuous and not discrete
+* Model Output
+  + Continuous (probability)
+
+
+
+
+```{r, warning=FALSE, message=FALSE}
+
+curve(1/(1+exp(-x)), -5, 5)
+
+```
+
+
+## Example Case
+
+> "A researcher is interested in how variables, such as GRE (Graduate Record Exam scores), GPA (grade point average) and prestige of the undergraduate institution, effect admission into graduate school. The response variable, admit/don’t admit, is a binary variable."
+
+[Original Article Link](https://stats.idre.ucla.edu/r/dae/logit-regression/)
+
+```{r, warning=FALSE, message=FALSE}
+
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+
+summary(mydata)
+
+
+
+library(ggplot2)
+ggplot(mydata) + 
+  geom_point(aes(x=gre , y= admit))
+
+ggplot(mydata) + 
+  geom_point(aes(x=gpa , y= admit), alpha = 1/5)
+
+ggplot(mydata) + 
+  geom_point(aes(x=rank , y= admit), alpha = 1/100)
+xtabs(~admit + rank, data = mydata)
+
+```
+
+## Example Case (cont.)
+
+#### Fitting the Model
+```{r, warning=FALSE, message=FALSE}
+mydata$rank <- factor(mydata$rank)
+mylogit <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
+summary(mylogit)
+
+library(jtools)
+summ(mylogit)
+
+mydata$rankP <- predict(mylogit, newdata = mydata, type = "response")
+
+ggplot( mydata, aes(x=gre, y=rankP)) +
+  geom_point(aes(color = mydata$admit)) +
+  geom_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = FALSE) 
+
+ggplot( mydata, aes(x=gpa, y=rankP)) +
+  geom_point(aes(color = mydata$admit)) +
+  geom_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = FALSE)
+
+
+library(forcats)
+mydata$rank <- fct_rev(mydata$rank)
+ggplot( mydata, aes(x=rank, y=rankP)) +
+  geom_point() +
+  geom_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = FALSE) 
+
+
+
+
+
+newdata1 <- with(mydata, data.frame(gre = mean(gre), gpa = mean(gpa), rank = factor(1:4)))
+newdata1$rankP <- predict(mylogit, newdata = newdata1, type = "response")
+newdata1
+
+newdata2 <- with(mydata, data.frame(gre = rep(seq(from = 200, to = 800, length.out = 100),
+                                              4), gpa = mean(gpa), rank = factor(rep(1:4, each = 100))))
+
+
+newdata3 <- cbind(newdata2, predict(mylogit, newdata = newdata2, type = "link",
+                                    se = TRUE))
+
+
+newdata3 <- within(newdata3, {
+    PredictedProb <- plogis(fit)
+})
+
+
+ggplot(newdata3, aes(x = gre, y = PredictedProb)) + geom_line(aes(colour = rank),
+    size = 1)
+```
