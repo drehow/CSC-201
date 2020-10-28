@@ -33,7 +33,9 @@ knitr::opts_chunk$set(echo = TRUE)
   
 
   
+## Analysis 
 
+> Goal: Build a spam filter for texts.
 
 ```{r, message=FALSE, warning=FALSE}
 set.seed(1234)    #Setting seed
