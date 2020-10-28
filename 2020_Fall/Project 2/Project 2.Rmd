@@ -1,7 +1,7 @@
 ---
 title: "Project 2"
 author: "D. Howell"
-date: "9/22/2020"
+date: "10/28/2020"
 output: html_document
 ---
 
@@ -9,4 +9,45 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Find two data sets not from the tidy tuesday repo, clean it, join it, explore it, model it and compare the evaluated models
+> Due November 21, 2020 - Late submissions cannot be accepted due to my deadline for final grade submissions. 
+
+### Intro
+In Project 1, you conducted an unguided exploratory analysis in order to draw independent conclusions about the contents, patterns, and trends within the data set you chose. This is an indispensible aspect of any data analysis. That is to say, if you have data that you want to analyze, then you need to conduct some semblance of an exploratory data analysis -- tidying, transforming, filtering, joining, and visualizing towards the goal of synthesizing a succinct description of the contents of your data. 
+
+Project 2 will take this process one step further to its logical end: modelling and model evaluation. You will perform a complete data science analysis in which you select a data set or multiple data sets that you can join into one, prepare it for analysis (cleaning, subsetting, transforming, etc. as needed), produce some initial visualizations, and then model it and evaluate the results. The modelling section of the analysis will need to consist of **at least two different types of models**  (e.g. Naive Bayes and Random Forest) performing **the same predictions on the same testing and training data sets**.
+
+### Prompt
+Here are the specific steps for the project:
+
+1. Select a dataset. It can be from anywhere, but if you need a few good places to start, try [Kaggle](https://www.kaggle.com/datasets), [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/index.php), and [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday). Since you will be modelling this time, the dataset should have at least several hundred records and 4 or more **usable** predictor variables (e.g., unique ID number columns don't count). For this project, I would recommend that you focus on classification problems and not regression problems, so your data needs to have a categorical column that you would be interested in trying to predict. May be binary or have several possible categories. 
+
+2. Write an R script that explores your data.
+    + The script will be an aid to your report (detailed below). It needs to run from top to bottom with no errors, and perform the following actions;
+        + Read in your data
+        + Perform any joining or cleaning required by the initial state of your data
+        + Transform your data and generate visualizations that correspond to the ones that you use in your report
+        + Randomize the order of the data
+        + Split into training and testing sets
+        + Make sure that the representation of your Y variable is equal between training and testing sets
+        + Fit the models to your training set
+        + Predict with the models on your testing set
+        + Perform some analysis of the accuracy of your models on the testing set (confusion matrices, visualizations comparing accuracies, etc.)
+    + Make sure to put comments above each section of code that tells me (the reader) what you are doing with the code that follows.
+
+3. Write a report that details your analysis. 
+    + Generally speaking, a good template to stick to for a technical analysis paper is as follows:
+        + **Introduction** - Give the reader some context for your analysis. If you are analyzing the environmental impact of electric mopeds compared to gas-powered vehicles, you might start this section with a statement about the implications of a warming planet the extent to which traditional vehicles impact global warming. After that, you give a short synopsis of your analysis: what you did, what you discovered, what you concluded. 
+        + **Data and Sources** - describe the data you started working with. What it's about, what kind of descriptive columns, how big it is, where it's from, how/when it was collected. The most important part of this section for project 2 is to lay out what variable you will be predicting!
+        + **Methodology / Analysis** - Explore your data through descriptions and visualizations, then describe your models and how you have tuned them.  I would expect to see several visualizations and descriptions, as well as some reasoning. **You don't have to include your code in this part**, just describe in plain English what the program does and why. This will likely be the longest section of your report. 
+        + **Results** - This is the only new section of the report requirements from Project 1. When you use models to predict an output in an analysis, you need to describe and evaluate the results. This part is different from your Conclusions because here, you're using statistical measures to describe the model performance, and in the conclusions, you are expressing your informed opinion of the results and what they contribute to the broader analysis. 
+        + **Conclusions** - You use all the exploratory visualizations and model predictions/valuations to draw and support your conclusions from the analysis. For example, "these models predict a 45% decrease in non-commercial carbon emissions over the next ten years with a reasonable degree of confidence, so it seems like our society is heading in the right direction in that regard. However, the public focus should still be on regulating the top 100 companies in terms of emissions, who collectively account for 71% of global emmissions."
+        
+### Deliverables
+You'll need to submit the following files on D2L, either as multiple attachments on the submission or in a single zip file:
+
+- Your data files (unless you are reading the data in from a URL)
+- Your R script
+- Your report
+
+Keep in mind that I am going to run your analysis on my computer, so I'll need everything necessary to do that (i.e., don't forget to submit your source data or a link to it). 
+
