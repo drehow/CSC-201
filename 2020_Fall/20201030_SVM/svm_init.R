@@ -161,7 +161,7 @@ points(dat[, 2:1], pch = 19, col = cols[predict(kernfit)])
 # fit model
 dat <- data.frame(x = Khan$xtrain, y=as.factor(Khan$ytrain))
 
-(out <- svm(y~., data = dat, kernel = "sigmoid", cost=10))
+(out <- svm(y~., data = dat, kernel = "radial", cost=10))
 
 # # tune model to find optimal cost, gamma values
 # tune.out <- tune(svm, y~., data = dat, kernel = 'linear',
