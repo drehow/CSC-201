@@ -33,11 +33,13 @@ knitr::opts_chunk$set(echo = TRUE)
   
 
   
+## Analysis 
 
+> Goal: Build a spam filter for texts.
 
 ```{r, message=FALSE, warning=FALSE}
 set.seed(1234)    #Setting seed
-setwd("C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201028_Naive_Bayes")    #Setting working directory
+setwd("/Users/drewhowell/Desktop/CSC-201/2020_Fall/20201028_Naive_Bayes")    #Setting working directory
 
 library(readr)
 spamhamdataset <- read_delim("SMSSpamCollection", '\t',col_names = F)   

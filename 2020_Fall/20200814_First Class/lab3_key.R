@@ -1,6 +1,7 @@
-setwd('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/Lab 3')
+setwd('/Users/drewhowell/Desktop/CSC-201/2020_Fall/Lab 3')
 
 library(readr)
+library(dplyr)
 
 emissions <- read_csv('emissions.csv')
 stocks <- read_csv('sp500.csv')
