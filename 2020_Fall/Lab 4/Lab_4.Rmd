@@ -1,0 +1,125 @@
+---
+title: "Lab 4"
+author: "D. Howell"
+date: "11/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+>Due 11/16/2020
+
+### Intro
+
+We're using the "adult" data set from the UCI Machine Learning Repository for this lab. The data set is described and explored in this useful article [here](https://rpubs.com/H_Zhu/235617). We'll use a logistic model to predict whether a person makes more or less than $50k per year and a linear regression model to predict a person's education level. 
+
+For the deliverable, you should submit an R script that:
+
+  1. Reads in and cleans the data
+  2. Subsets it into testing and training data sets
+  3. Models, predicts, and evaluates the models' predictions through tables (like confusion matrixes) and visualizations. 
+
+I have provided the code for the first two tasks; you need to do the modeling. The R script below has some suggestions in the comment blocks, but feel free to go it alone as long as your script performs the following sub-tasks for step 3:
+
+  * Fit a logistic model to the training set and make predictions on the testing set for the response variable, "income." 
+  * Set a threshold for what prediction qualifies as a positive and negative response, and change the predictions to binary
+  * table the predictions against the actual y variable for the testing data set (confusion matrix)
+  * Fit a linear regression model to the training data and make predictions on the testing set for the response variable, "education_num" (note: your model results will not be valid unless you remove the "education" column first). 
+  * Visualize the linear model's predictions against the actual values of the test set for "education". 
+
+
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2) #plotting
+library(plyr) #formatting
+library(jtools) #summarizing models
+
+# read in the data
+adult <- read.table('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data', 
+                    sep = ',', fill = F, strip.white = T)
+colnames(adult) <- c('age', 'workclass', 'fnlwgt', 'education', 
+                     'education_num', 'marital_status', 'occupation', 'relationship', 'race', 'sex', 
+                     'capital_gain', 'capital_loss', 'hours_per_week', 'native_country', 'income')
+
+
+# Create Training Data
+input_ones <- adult[which(adult$income == '<=50K'), ]  # all 1's
+input_zeros <- adult[which(adult$income == '>50K'), ]  # all 0's
+set.seed(100)  # for repeatability of samples
+input_ones_training_rows <- sample(1:nrow(input_ones), 0.7*nrow(input_ones))  # 1's for training
+input_zeros_training_rows <- sample(1:nrow(input_zeros), 0.7*nrow(input_zeros))  # 0's for training. Pick as many 0's as 1's
+training_ones <- input_ones[input_ones_training_rows, ]  
+training_zeros <- input_zeros[input_zeros_training_rows, ]
+trainingData <- rbind(training_ones, training_zeros)  # row bind the 1's and 0's 
+
+# Create Test Data
+test_ones <- input_ones[-input_ones_training_rows, ]
+test_zeros <- input_zeros[-input_zeros_training_rows, ]
+testData <- rbind(test_ones, test_zeros)  # row bind the 1's and 0's 
+
+
+#===============================
+# Logistic Model
+#===============================
+
+# fit a logistic model to the trainingData with income as the response and everything else as predictors
+# logistic_model <- glm(<response> ~ ., data, family = "binomial")
+
+# summarize the model 
+# summ(logistic_model)
+
+# make predictions
+# predicted <- predict(logistic_model, <test data>, type="response")
+
+# visualize ordered predictions
+# plot(predicted[order(predicted)])
+
+# set threshold for 1 - 0 split
+# 
+# NOTE: you will probably want to play around with this threshold by changing it around and then rerunning the code block beneath it to see which threshold yields the highest accuracy. I know that 0.75 is a bad threshold, so you'll need to change it to make the model better. 
+# 
+# threshold <- 0.75
+
+# # This is the code block to run after changing your threshold value to see how the accuracy changes. 
+# predicted <- predict(logistic_model, test data, type="response")
+# # convert predictions to binary
+# predicted <- ifelse(predicted > threshold, 1, 0)
+# if(!1 %in% testData$income){
+#   testData$income <- ifelse(as.character(testData$income) == '<=50K', 0, 1)
+# }
+# table(testData$income, predicted)
+# (accuracy = sum(testData$income == predicted) / length(predicted))
+
+
+
+#===============================
+# Linear Regression Model
+#===============================
+
+# # reset any edits you made above to the original testing and training sets. 
+trainingData <- rbind(training_ones, training_zeros)  # row bind the 1's and 0's 
+testData <- rbind(test_ones, test_zeros)  # row bind the 1's and 0's 
+
+# # get rid of the education column from both train and test because it is the same as the response variable and would artificially increase the model's accuracy. 
+# dataframe$column_name <- NULL
+
+# # fit the linear model to the education_num response variable and everything else as predictors. 
+# linear_model <- lm(<your response variable> ~ ., <training set>)
+
+# # summarise the model
+# summ(linear_model)
+
+# # Use the model to make predictions on the test set
+# predicted <- predict(linear_model, <test set>, type="response")
+
+# # Visualize the model predictions along with the actual response values for the test data set. 
+# testData$predictions <- predicted
+# testData <- testData[order(testData$education_num),]
+# testData$index <- 1:nrow(testData)
+# ggplot(testData, aes(x = index)) + 
+#   geom_line(aes(y = predictions), color = 'blue', alpha = 0.5) + 
+#   geom_line(aes(y = education_num), size = 1.4, color = 'black') + 
+#   theme_bw()
+```
