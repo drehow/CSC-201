@@ -1,0 +1,68 @@
+setwd('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201104_Neural_Nets/')
+library(readr)
+# install.packages('neuralnet')
+library(neuralnet)
+
+bnk <- read_delim('bank.csv', delim = ';')
+str(bnk)
+
+
+#Min Max Normalization
+bnk$balance <-(bnk$balance-min(bnk$balance)) /
+  (max(bnk$balance)-min(bnk$balance))
+bnk$age <- (bnk$age-min(bnk$age)) / (max(bnk$age)-min(bnk$age))
+bnk$previous <- (bnk$previous-min(bnk$previous)) /
+  (max(bnk$previous)-min(bnk$previous))
+bnk$campaign <- (bnk$campaign-min(bnk$campaign)) /
+  (max(bnk$campaign)-min(bnk$campaign))
+
+table(bnk$education)
+
+bnk$education <- factor(bnk$education)
+levels(bnk$education)
+
+head(model.matrix(~education, data=bnk))
+
+bnk$education <- relevel(bnk$education, ref = "secondary")
+head(model.matrix(~education, data=bnk))
+
+bnk_matrix <- model.matrix(~age+job+marital+education
+                           +default+balance+housing
+                           +loan+poutcome+campaign
+                           +previous+y, data=bnk)
+
+colnames(bnk_matrix)
+
+colnames(bnk_matrix)[3] <- "jobbluecollar"
+colnames(bnk_matrix)[8] <- "jobselfemployed"
+
+col_list <- paste(c(colnames(bnk_matrix[,-c(1,28)])),collapse="+")
+col_list <- paste(c("yyes~",col_list),collapse="")
+f <- formula(col_list)
+
+library(neuralnet)
+set.seed(7896129)
+
+nmodel <- neuralnet(f,data=bnk_matrix,hidden=2,
+                    threshold = 0.1,
+                    learningrate = 0.3,
+                    algorithm = "rprop+")
+
+
+
+output <- compute(nmodel, bnk_matrix[,-c(1,28)],rep=1)
+
+prediction_ordered = data.frame('pred' = output$net.result[order(output$net.result)])
+plot(nmodel)
+
+library(ggplot2)
+ggplot(prediction_ordered) + 
+  geom_point(aes(y = pred, x = 1:nrow(prediction_ordered)))
+
+predict <- output$net.result
+predict <- ifelse(predict > 0.2, 'yes', 'no')
+
+bnk$pred <- predict
+
+table(bnk$pred, bnk$y)
+
