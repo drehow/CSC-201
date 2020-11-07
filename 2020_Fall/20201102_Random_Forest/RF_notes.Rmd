@@ -1,5 +1,5 @@
 ---
-title: "Support Vector Machines"
+title: "Random Forest"
 author: "D. Howell"
 date: "10/30/2020"
 output: html_document
