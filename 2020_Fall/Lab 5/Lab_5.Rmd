@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 > Due November 21. No late submissions. 
 
 ## Intro
-This lab is about comparing the predictive performance (accuracy) of a variety of models that we have surveyed in the course. We'll use the heart disease data set from the Random Forest class (data set details [here](http://htmlpreview.github.io/?https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20201102_Random_Forest/RF_notes.html))
+This lab is about comparing the predictive performance (accuracy) of a variety of models that we have surveyed in the course. We'll use the heart disease data set from the Random Forest class (data set details [here](https://raw.githubusercontent.com/drehow/CSC-201/master/2020_Fall/20201102_Random_Forest/RF_notes.html))
 
 ## Prompt
 The script to clean and prepare the data for analysis is pasted below along with the training, prediction, and evaluation of a Random Forest model. At the end of the script, you should add code that performs the same steps as what is done on the random forest model, but for a Naive Bayes and the four different SVM kernel shapes (linear, radial, sigmoid, polynomial). Once you have trained, tested, and produced a confusion matrix for those 5 models, make a visualization comparing the accuracy of each of the models as a percentage (100 * correct predictions / total predictions) on the test set. 
