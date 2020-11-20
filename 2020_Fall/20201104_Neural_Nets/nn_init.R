@@ -1,4 +1,5 @@
-setwd('C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201104_Neural_Nets/')
+setwd('/Users/drewhowell/Desktop/CSC-201/2020_Fall/20201104_Neural_Nets/')
+
 library(readr)
 # install.packages('neuralnet')
 library(neuralnet)
@@ -43,13 +44,15 @@ f <- formula(col_list)
 library(neuralnet)
 set.seed(7896129)
 
-nmodel <- neuralnet(f,data=bnk_matrix,hidden=2,
+nmodel <- neuralnet(f,
+                    data=bnk_matrix,
+                    hidden=3,
                     threshold = 0.1,
                     learningrate = 0.3,
                     algorithm = "rprop+")
 
 
-
+summ(nmodel)
 output <- compute(nmodel, bnk_matrix[,-c(1,28)],rep=1)
 
 prediction_ordered = data.frame('pred' = output$net.result[order(output$net.result)])

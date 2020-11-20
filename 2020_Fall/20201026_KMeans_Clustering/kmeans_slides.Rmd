@@ -1,5 +1,5 @@
 ---
-title: "Linear Regression"
+title: "K Means Clustering"
 author: "D. Howell"
 date: "10/19/2020"
 output: slidy_presentation
@@ -74,12 +74,6 @@ ggplot() +
 
 library(factoextra)
 fviz_nbclust(df, kmeans, method = 'wss') #+ geom_vline(xintercept = 4, linetype = 2)
-
-
-
-
-
-
 
 
 ```

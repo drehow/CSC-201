@@ -1,7 +1,7 @@
 ---
 title: "Random Forest"
 author: "D. Howell"
-date: "10/30/2020"
+date: "11/02/2020"
 output: html_document
 ---
 
@@ -14,25 +14,33 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 * Model Notes:
+
   + random forest is a aggregation of multiple decision tree models
   + decision boundary is in the form of several rectandular sections
   + robust to different types of analysis, but prone to overfitting - must be "pruned"
 
 * Model Uses
+
   + Classification, some regression
   + supervised machine learning
 
 * Model Input
+
   + Countinuous and discrete
   
 * Model Output
+
   + Discrete, but can also perform regression
   
 * Model Fitting Algorithm
+
   + Decision tree
+  
     + separate on variables that provide the most distinction between classes
     + continue separating until max depth has been reached 
+    
   + Random Forest
+  
     + run several decision trees at set depth, selecting variables to split on by choosing the best one among a preset number of randomly chosen variables from the test set. 
     + aggregate the models into one tree
 
@@ -68,7 +76,7 @@ library(randomForest)
 require(caTools)
 
 data <- read.csv(
-  "C:/Users/drew.howell/Desktop/CSC-201/2020_Fall/20201102_Random_Forest/processed.cleveland.data",
+  "/Users/drewhowell/Desktop/CSC-201/2020_Fall/20201102_Random_Forest/processed.cleveland.data",
   header=FALSE
 )
 
