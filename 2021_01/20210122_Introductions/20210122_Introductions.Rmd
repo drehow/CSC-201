@@ -13,29 +13,33 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Welcome!
 
 Zoom Link: https://oru.zoom.us/j/91299779087?pwd=eU5kdzNzT3NVR2dzTzhnNmYrbUM5dz09
+
 Password: 987321
 
-* Personal Introductions
-  + Student Introductions
+**Personal Introductions**
+
+  * Student Introductions
     + Name, Major, Year, Origin
-  + Instructor Introduction
-    + Educational Background
-      + B.S. in Mechanical Engineering from ORU
-      + M.S. in Applied Data Science from Syracuse University
-    + Professional Background
-      + Clinical DB Programmer
-      + Data Mining Specialist 
-      + Quantitative Research Analyst
-* Course Intro
-  + Extracting value from data
-    + [Statistics](https://towardsdatascience.com/the-5-basic-statistics-concepts-data-scientists-need-to-know-2c96740377ae)
+    
+    ***
+    
+**Course Intro**
+
+  * Extracting value from data
+  
+    ***
+    [Statistics](https://towardsdatascience.com/the-5-basic-statistics-concepts-data-scientists-need-to-know-2c96740377ae)
       + Predictive modelling 
       + Analysis of data sets
-    + [Computer Science](https://www.dataquest.io/blog/what-is-a-data-engineer/) 
+      
+      ***
+    [Computer Science](https://www.dataquest.io/blog/what-is-a-data-engineer/) 
       + Data storage
       + ETL pipelines 
       + Implementing algorithms
       + Automation
+      
+      ***
   + Applications
     + [Recommendation engines for retail](https://medium.com/humansforai/recommendation-engines-e431b6b6b446)
     + [Fraud detection in banking](https://emerj.com/ai-sector-overviews/artificial-intelligence-fraud-banking/)
@@ -45,17 +49,29 @@ Password: 987321
     + [Natural language processing in human/computer interaction](https://towardsdatascience.com/how-amazon-alexa-works-your-guide-to-natural-language-processing-ai-7506004709d3)
     + [Professional sports management optimization](https://towardsdatascience.com/scope-of-analytics-in-sports-world-37ed09c39860)
   + [Data Science as a Career](https://www.computerscience.org/careers/data-science/)
-  + How is the course structured?
-    + Review units and topics on [schedule](https://d2l.oru.edu/d2l/le/content/828830/viewContent/3628003/View)
-* Course Administration
-  + Review [syllabus](https://d2l.oru.edu/d2l/le/content/828830/viewContent/3627993/View)
-  + Grading structure
+
+***
+
+**Course Structure**
+
+  * Review units and topics on [schedule](https://github.com/drehow/CSC-201/raw/master/2021_01/meta/CSC201_Schedule_Spring2021.pdf)
+    
+**Course Administration**
+
+  * Review [syllabus](https://github.com/drehow/CSC-201/raw/master/2021_01/meta/2021_Spring_Syllabus.pdf)
+  * Grading structure
     + 50% Labs (5)
     + 50% Projects (2)
-  + Attendace options
+  * Attendace options
     + 5/15 and 5/17 class online
     + Asynchronous viewing process
-* Final points
-  + Complete [survey](https://docs.google.com/forms/d/e/1FAIpQLSej4jFHTdVzRRf_5uyDJx5O2IQpS4AjK9Mj3J9WMpo8H-zAcg/viewform)
-  + Login on ORU CIT image and check presence of R/RStudio and Excel
+    
+    ***
+    
+**Final points**
+
+  * Complete [survey](https://forms.gle/127RKErWiwFFLbey5)
+  * Login on ORU CIT image and check presence of R/RStudio and Excel
+  
+  ***
   
