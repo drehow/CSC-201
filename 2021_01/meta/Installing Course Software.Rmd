@@ -3,8 +3,7 @@ title: "Installing R / RStudio"
 author: "D. Howell"
 date: "1/17/2021"
 output: 
-  html_document:
-    theme: flatly
+  pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -17,7 +16,7 @@ We'll get into the weeds of R and RStudio later in the course, but for now you j
 
 It's important to download and install the following software in the following order.
 
-1. You can download and install R [here](https://cloud.r-project.org/).
+1. You can download and install R [by clicking here (link).](https://cloud.r-project.org/).
   * If you have a Mac:
     + Click "Download R for (Mac) OS X"
     + On the next page, click "R-4.0.2.pkg (notarized and signed)"
@@ -29,7 +28,7 @@ It's important to download and install the following software in the following o
     + Click "Download R 4.0.2 for Windows"
     + Again, just open the downloaded file and agree/continue with all the default options until it's done. 
   * If you have a Linux OS, then you probably know more about installing software than I do. 
-2. And RStudio [here.](https://rstudio.com/products/rstudio/download/#download)
+2. And RStudio [here (link).](https://rstudio.com/products/rstudio/download/#download)
   * The link should take you about halfway down the page to the installers for the free version of RStudio. Just pick the one that corresponds to your OS and install with all the defaults just like you did with R. 
 
 
