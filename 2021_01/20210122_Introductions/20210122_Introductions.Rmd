@@ -63,7 +63,7 @@ Password: 987321
     + 50% Labs (5)
     + 50% Projects (2)
   * Attendace options
-    + 5/15 and 5/17 class online
+    + 3/15 and 3/17 class online
     + Asynchronous viewing process
     
     ***
