@@ -69,7 +69,7 @@ Data comes different shapes, sizes, formats, and structures. The most defining f
     + The rows are usually in some particular order. For instance, the emails are ordered by which was most recently sent.
     
 ### Anatomy of Structured Data
-Start with one of R's example data sets, [mtcars]('https://rpubs.com/neros/61800').
+Start with one of R's example data sets, [mtcars](https://rpubs.com/neros/61800).
 ```{r}
 data("mtcars")
 knitr::kable(head(mtcars,10))

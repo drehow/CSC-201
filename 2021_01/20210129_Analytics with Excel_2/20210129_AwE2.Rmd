@@ -1,0 +1,23 @@
+---
+title: "Analytics with Excel, Pt. II"
+author: "D. Howell"
+date: "1/19/2021"
+output: 
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Prompt
+
+How has Oklahoma performed compared to the rest of the US in terms of preventing the spread of COVID-19?
+
+### Data Links
+* [US Census 2019 Population by State](https://www.census.gov/data/tables/time-series/demo/popest/2010s-state-total.html#par_textimage)
+
+* [US COVID-19 Cases by State](https://github.com/nytimes/covid-19-data/blob/master/us-states.csv)
